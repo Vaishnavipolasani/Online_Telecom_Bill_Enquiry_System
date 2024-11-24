@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for New Connection</title>
+	<link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Connection Management</h2>
+        <ul>
+            <li><a href="#">Registration</a></li>
+            <li><a href="#">Connection Management</a></li>
+            <li><a href="#">Plan Management</a></li>
+            <li><a href="#">Billing Management</a></li>
+            <li><a href="#">Help Desk</a></li>
+            <li><a href="#">Reports</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>Apply for New Connection</h1>
+		<form action="/customer/apply" method="post">
+        
+            <label for="customerId">Customer ID:</label>
+            <input type="text" id="customerId" name="customerId">
+
+            
+            <label for="connectionType">Connection Type:</label>
+            <select id="connectionType" name="connectionType" required>
+                <option value="" disabled selected>Select Connection Type</option>
+                <option value="prepaid">Prepaid</option>
+                <option value="postpaid">Postpaid</option>
+                <option value="broadband">Broadband</option>
+            </select>
+
+            <label for="networkType">Network Type:</label>
+            <select id="networkType" name="networkType" required>
+                <option value="" disabled selected>Select Network Type</option>
+                <option value="4G">4G</option>
+                <option value="5G">5G</option>
+                <option value="Fiber">Fiber</option>
+            </select>
+
+            <label for="activationDate">Activation Date:</label>
+            <input type="date" id="activationDate" name="activationDate" required>
+
+            <label for="description">Comments:</label>
+            <textarea id="description" name="description" rows="3"></textarea>
+
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+</body>
+</html>
