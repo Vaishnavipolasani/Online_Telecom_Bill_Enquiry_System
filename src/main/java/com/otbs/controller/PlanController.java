@@ -17,6 +17,9 @@ public class PlanController {
 	
 	@Autowired
     private final PlanServiceImpl planService;
+//	private final PlaServiceIml planService = PlanServiceIml();
+
+	
 
     // Constructor-based dependency injection
     public PlanController(PlanServiceImpl planService) {
