@@ -10,6 +10,6 @@ import com.otbs.model.Plan;
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, Integer>{
 
-	List<Plan> findAll();
+//	List<Plan> findAll();
 	
 }

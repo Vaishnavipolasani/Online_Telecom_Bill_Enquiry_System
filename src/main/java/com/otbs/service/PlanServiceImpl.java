@@ -14,6 +14,10 @@ public class PlanServiceImpl implements PlanService{
 	
 	@Autowired
 	private PlanRepository planRepository;
+	
+	public Plan createPlan(Plan plan) {
+	    return planRepository.save(plan);
+	}
 
 	@Override
 	public List<Plan> getAllPlans() {
@@ -24,5 +28,4 @@ public class PlanServiceImpl implements PlanService{
 	public Optional<Plan> getPlanById(int id) {
 		return planRepository.findById(id);
 	}
-
 }

@@ -27,8 +27,8 @@ public class Plan {
 	@Column(nullable=false)
 	private String dataLimit;
 	
-	@Column(nullable=false)
-	private String callLint;
+//	@Column(nullable=false)
+	private String callLimit;
 	
 	@Column(nullable=false)
 	private String smsLimit;

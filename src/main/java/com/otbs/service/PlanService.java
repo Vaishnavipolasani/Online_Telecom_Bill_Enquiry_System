@@ -12,6 +12,6 @@ public interface PlanService {
 	public Optional<Plan> getPlanById(int id);
 	
 ////	this method is only for the admin
-//	public Plan createPlan(Plan plan);
+	public Plan createPlan(Plan plan);
 
 }
