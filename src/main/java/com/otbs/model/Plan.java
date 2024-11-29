@@ -32,6 +32,16 @@ public class Plan {
 	@Column(nullable=false)
 	private String smsLimit;
 	
+	//need by bill management team for the bill additiona cost calculation
+	private double additionalChargeRatePerMB;
+	private double additionalChargeRatePerCall;
+	private double additionalChargeRatePerSMS;
+	
+
+	
+	
+	//Getter and setter
+	
 	public int getPlanId() {
 		return planId;
 	}
