@@ -15,10 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 
 @Entity
 @Table(name="connectionlog")
@@ -40,6 +37,46 @@ public class ConnectionLog {
 	
 	@Column(nullable = false)
 	private LocalDateTime datetime;
+
+	public int getLogId() {
+		return logId;
+	}
+
+	public void setLogId(int logId) {
+		this.logId = logId;
+	}
+
+	public Connection getConnectionObj() {
+		return connectionObj;
+	}
+
+	public void setConnectionObj(Connection connectionObj) {
+		this.connectionObj = connectionObj;
+	}
+
+	public String getConnectionType() {
+		return connectionType;
+	}
+
+	public void setConnectionType(String connectionType) {
+		this.connectionType = connectionType;
+	}
+
+	public String getChangeType() {
+		return changeType;
+	}
+
+	public void setChangeType(String changeType) {
+		this.changeType = changeType;
+	}
+
+	public LocalDateTime getDatetime() {
+		return datetime;
+	}
+
+	public void setDatetime(LocalDateTime datetime) {
+		this.datetime = datetime;
+	}
 	
 	
 	
