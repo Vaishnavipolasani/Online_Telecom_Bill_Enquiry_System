@@ -3,18 +3,24 @@ package com.otbs.model;
 import jakarta.persistence.*;
 import java.util.Date;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
 @Entity
 public class Complaint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int complaintID;
+    private int complaintId;
 
     @ManyToOne
-    @JoinColumn(name = "raised_by", nullable = false)
-    private Customer raisedBy;
+    @JoinColumn(name = "connectionId")
+    @JsonIgnoreProperties("complaintsRaised")
+    private Connection connection;
 
     @ManyToOne
-    @JoinColumn(name = "assigned_to", nullable = true) 
+    @JoinColumn(name = "executiveId") 
+    @JsonIgnoreProperties("complaintsAssigned")
     private HelpDeskExecutive assignedTo;
 
     private String complaintType;
@@ -24,24 +30,23 @@ public class Complaint {
     private Date createdDate;
     private Date resolvedDate;
 
-    // Getters and Setters
-    public int getComplaintID() {
-        return complaintID;
-    }
+  	public int getComplaintId() {
+		return complaintId;
+	}
 
-    public void setComplaintID(int complaintID) {
-        this.complaintID = complaintID;
-    }
+	public void setComplaintId(int complaintId) {
+		this.complaintId = complaintId;
+	}
 
-    public Customer getRaisedBy() {
-        return raisedBy;
-    }
+	public Connection getConnection() {
+		return connection;
+	}
 
-    public void setRaisedBy(Customer raisedBy) {
-        this.raisedBy = raisedBy;
-    }
+	public void setConnection(Connection connection) {
+		this.connection = connection;
+	}
 
-    public HelpDeskExecutive getAssignedTo() {
+	public HelpDeskExecutive getAssignedTo() {
         return assignedTo;
     }
 

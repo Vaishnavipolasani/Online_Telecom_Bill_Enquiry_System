@@ -1,5 +1,10 @@
 package com.otbs.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,7 +48,23 @@ public class Connection {
 	@JoinColumn(name = "outlet_id", nullable = false)
 	private Outlet outletObj;
 	
-	 @Column(nullable = false)
+	@ManyToOne
+	@JoinColumn(name = "planId")
+		private Plan plan;
+
+	@OneToMany(mappedBy = "connection", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnoreProperties("connection")
+	private List<Complaint> complaintsRaised;
+	
+	 public Plan getPlan() {
+		return plan;
+	}
+
+	public void setPlan(Plan plan) {
+		this.plan = plan;
+	}
+
+	@Column(nullable = false)
 	private String status;
 
 	public int getConnectionId() {

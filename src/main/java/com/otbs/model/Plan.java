@@ -10,8 +10,7 @@ import lombok.Setter;
 
 
 @Entity
-@Getter
-@Setter
+
 public class Plan {
 	
 	@Id
@@ -32,5 +31,55 @@ public class Plan {
 	
 	@Column(nullable=false)
 	private String smsLimit;
+	
+	public int getPlanId() {
+		return planId;
+	}
+
+	public void setPlanId(int planId) {
+		this.planId = planId;
+	}
+
+	public String getPlanName() {
+		return planName;
+	}
+
+	public void setPlanName(String planName) {
+		this.planName = planName;
+	}
+
+	public double getFixedRate() {
+		return fixedRate;
+	}
+
+	public void setFixedRate(double fixedRate) {
+		this.fixedRate = fixedRate;
+	}
+
+	public String getDataLimit() {
+		return dataLimit;
+	}
+
+	public void setDataLimit(String dataLimit) {
+		this.dataLimit = dataLimit;
+	}
+
+	public String getCallLimit() {
+		return callLimit;
+	}
+
+	public void setCallLimit(String callLimit) {
+		this.callLimit = callLimit;
+	}
+
+	public String getSmsLimit() {
+		return smsLimit;
+	}
+
+	public void setSmsLimit(String smsLimit) {
+		this.smsLimit = smsLimit;
+	}
+
+	
 	
 }
