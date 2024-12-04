@@ -1,15 +1,24 @@
 package com.otbs.repository;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import com.otbs.model.Plan;
+import java.util.List;
 
 @Repository
-public interface PlanRepository extends JpaRepository<Plan, Integer>{
+public interface PlanRepository extends JpaRepository<Plan, Integer> {
 
-//	List<Plan> findAll();
-	
+    // Custom query method to find by plan name
+    Optional<Plan> findByPlanName(String planName);
+    
+    // Custom method for searching by fixedRate
+    List<Plan> findByFixedRate(double fixedRate);
+    
+    // Custom method for searching by group of plan
+    List<Plan> findByPlanGroup(String planGroup);
+    
+   // Custom method for searching by dataLimit
+    List<Plan> findByDataLimit(String dataLimit);
 }
