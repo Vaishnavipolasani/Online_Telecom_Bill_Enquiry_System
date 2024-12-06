@@ -1,18 +1,18 @@
 package com.otbs.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import com.otbs.exception.InvalidEntityException;
 import com.otbs.model.Plan;
 import com.otbs.service.PlanService;
 
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/plans") // Standard REST naming convention
+@RequestMapping("/plans")
 public class PlanController {
 
     private final PlanService planService;
@@ -22,97 +22,91 @@ public class PlanController {
         this.planService = planService;
     }
 
-
     // Get all plans
     @GetMapping("/getAll")
-    public ResponseEntity<List<Plan>> getAllPlans() {
+    public ResponseEntity<List<Plan>> getAllPlans() throws InvalidEntityException {
         List<Plan> plans = planService.getAllPlans();
         if (plans.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new InvalidEntityException("No plans found in the database.");
         }
-        return new ResponseEntity<>(plans, HttpStatus.OK);
+        return ResponseEntity.ok(plans);
     }
 
-//  Get a plan by ID
+    // Get a plan by ID
     @GetMapping("/getId/{id}")
-    public ResponseEntity<Plan> getPlanById(@PathVariable int id) {
-        Optional<Plan> plan = planService.getPlanById(id);
-        return plan.map(ResponseEntity::ok)
-                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<Plan> getPlanById(@PathVariable int id) throws InvalidEntityException {
+        return ResponseEntity.ok(
+                planService.getPlanById(id)
+                        .orElseThrow(() -> new InvalidEntityException("Plan with ID " + id + " does not exist."))
+        );
     }
-    
-//  Get a plan by Name
-    @GetMapping("/name/{planName}")
-    public ResponseEntity<Plan> getPlanByName(@PathVariable String planName) {
-        Optional<Plan> plan = planService.getPlanByName(planName);
-        return plan.map(ResponseEntity::ok)
-                   .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+    // Get a plan by name
+    @GetMapping("/getName/{planName}")
+    public ResponseEntity<Plan> getPlanByName(@PathVariable String planName) throws InvalidEntityException {
+        return ResponseEntity.ok(
+                planService.getPlanByName(planName)
+                        .orElseThrow(() -> new InvalidEntityException("Plan with name " + planName + " does not exist."))
+        );
     }
-    
-//  Get a plan by fixedRate
-    @GetMapping("/fixedRate/{fixedRate}")
-    public ResponseEntity<List<Plan>> getPlansByFixedRate(@PathVariable double fixedRate) {
+
+    // Get plans by fixed rate
+    @GetMapping("/getFixedRate/{fixedRate}")
+    public ResponseEntity<List<Plan>> getPlansByFixedRate(@PathVariable double fixedRate) throws InvalidEntityException {
         List<Plan> plans = planService.getPlansByFixedRate(fixedRate);
         if (plans.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new InvalidEntityException("No plans found with fixed rate: " + fixedRate);
         }
-        return new ResponseEntity<>(plans, HttpStatus.OK);
+        return ResponseEntity.ok(plans);
     }
- 
-//  Get all the plan based on the group
-    @GetMapping("/planGroup/{planGroup}")
-    public ResponseEntity<List<Plan>> getPlansByPlanGroup(@PathVariable String planGroup) {
+
+    // Get plans by plan group
+    @GetMapping("/getPlanGroup/{planGroup}")
+    public ResponseEntity<List<Plan>> getPlansByPlanGroup(@PathVariable String planGroup) throws InvalidEntityException {
         List<Plan> plans = planService.getPlansByPlanGroup(planGroup);
         if (plans.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new InvalidEntityException("No plans found in group: " + planGroup);
         }
-        return new ResponseEntity<>(plans, HttpStatus.OK);
+        return ResponseEntity.ok(plans);
     }
-    
-    
-//  Get all the plan based on the dataLimit   
-    @GetMapping("/dataLimit/{dataLimit}")
-    public ResponseEntity<List<Plan>> getPlansByDataLimit(@PathVariable String dataLimit) {
+
+    // Get plans by data limit
+    @GetMapping("/getDataLimit/{dataLimit}")
+    public ResponseEntity<List<Plan>> getPlansByDataLimit(@PathVariable String dataLimit) throws InvalidEntityException {
         List<Plan> plans = planService.getPlansByDataLimit(dataLimit);
         if (plans.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new InvalidEntityException("No plans found with data limit: " + dataLimit);
         }
-        return new ResponseEntity<>(plans, HttpStatus.OK);
+        return ResponseEntity.ok(plans);
     }
-    
-    
-    
- // Create a new plan (Only for the Admin...)    
+
+    // Get a plan by number of days
+    @GetMapping("/getNumberOfDay/{numberOfDay}")
+    public ResponseEntity<Plan> getPlansByNumberOfDay(@PathVariable int numberOfDay) throws InvalidEntityException {
+        return ResponseEntity.ok(
+                planService.getPlansByNumberOfDay(numberOfDay)
+                        .orElseThrow(() -> new InvalidEntityException("Plan with " + numberOfDay + " days does not exist."))
+        );
+    }
+
+    // Create a new plan (Admin only)
     @PostMapping("/add")
-    public ResponseEntity<Plan> createPlan(@RequestBody Plan plan) {
-        Plan createdPlan = planService.createPlan(plan);
-        return new ResponseEntity<>(createdPlan, HttpStatus.CREATED);
+    public ResponseEntity<Plan> createPlan(@Valid @RequestBody Plan plan) throws InvalidEntityException {
+        return ResponseEntity.status(201).body(planService.createPlan(plan));
     }
-    
-    
-  
-//  update the plan based on the plan id (Only for the Admin...)
-    @PutMapping("/updatById/{id}")
-    public ResponseEntity<Plan> updatePlan(@PathVariable int id, @RequestBody Plan updatedPlan) {
-        try {
-            Plan plan = planService.updatePlan(id, updatedPlan);
-            return new ResponseEntity<>(plan, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+
+    // Update a plan by ID (Admin only)
+    @PutMapping("/updateById/{id}")
+    public ResponseEntity<Plan> updatePlan(@PathVariable int id, @Valid @RequestBody Plan updatedPlan) throws InvalidEntityException {
+        Plan plan = planService.updatePlan(id, updatedPlan);
+        return ResponseEntity.ok(plan);
     }
-    
-    
-//   delete the plan based on the plan id (Only for the Admin...)
+
+    // Delete a plan by ID (Admin only)
     @DeleteMapping("/deleteById/{id}")
-    public ResponseEntity<String> deletePlan(@PathVariable int id) {
-        try {
-            planService.deletePlanById(id);
-            return new ResponseEntity<>("Plan deleted successfully!", HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<String> deletePlan(@PathVariable int id) throws InvalidEntityException {
+        planService.deletePlanById(id);
+        return ResponseEntity.ok("Plan with ID " + id + " deleted successfully.");
     }
-    
 }
 

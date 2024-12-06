@@ -21,4 +21,8 @@ public interface PlanRepository extends JpaRepository<Plan, Integer> {
     
    // Custom method for searching by dataLimit
     List<Plan> findByDataLimit(String dataLimit);
+    
+   // Custom method for searching based on the numberOfDay
+    Optional<Plan> findByNumberOfDay(int numberOfDay);
+    
 }
