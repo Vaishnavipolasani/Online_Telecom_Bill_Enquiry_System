@@ -1,7 +1,9 @@
 package com.otbs.model;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -47,6 +49,10 @@ public class Connection {
 	@ManyToOne
 	@JoinColumn(name = "outlet_id", nullable = false)
 	private Outlet outletObj;
+	
+	@Column(nullable = false)
+	@JsonFormat(pattern = "dd-MM-yyyy")
+	private LocalDate activationdate;
 	
 	@ManyToOne
 	@JoinColumn(name = "planId")
@@ -121,7 +127,17 @@ public class Connection {
 
 	public void setStatus(String status) {
 		this.status = status;
+
 	}
+
+	public LocalDate getActivationdate() {
+		return activationdate;
+	}
+
+	public void setActivationdate(LocalDate activationdate) {
+		this.activationdate = activationdate;
+	}
+	
 	 
 	 
 }

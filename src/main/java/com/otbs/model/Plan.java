@@ -1,95 +1,58 @@
 package com.otbs.model;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.validation.constraints.*;
+
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 
 @Entity
-
+@Getter
+@Setter
 public class Plan {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int planId;
-	
-	@Column(nullable=false)
-	private String planName;
-	
-	@Column(nullable=false)
-	private double fixedRate;
-	
-	@Column(nullable=false)
-	private String dataLimit;
-	
-//	@Column(nullable=false)
-	private String callLimit;
-	
-	@Column(nullable=false)
-	private String smsLimit;
-	
-	//need by bill management team for the bill additiona cost calculation
-	private double additionalChargeRatePerMB;
-	private double additionalChargeRatePerCall;
-	private double additionalChargeRatePerSMS;
-	
 
-	
-	
-	//Getter and setter
-	
-	public int getPlanId() {
-		return planId;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int planId;
 
-	public void setPlanId(int planId) {
-		this.planId = planId;
-	}
+    @NotBlank(message = "Plan name is mandatory")
+    @Column(nullable = false, unique = true)
+    private String planName;
 
-	public String getPlanName() {
-		return planName;
-	}
+    @Positive(message = "Fixed rate must be positive")
+    @Column(nullable = false)
+    private double fixedRate;
 
-	public void setPlanName(String planName) {
-		this.planName = planName;
-	}
+    @NotBlank(message = "Data limit is mandatory")
+    @Column(nullable = false)
+    private String dataLimit;
 
-	public double getFixedRate() {
-		return fixedRate;
-	}
+    @NotBlank(message = "Call limit is mandatory")
+    @Column(nullable = false)
+    private String callLimit;
 
-	public void setFixedRate(double fixedRate) {
-		this.fixedRate = fixedRate;
-	}
+    @NotBlank(message = "SMS limit is mandatory")
+    @Column(nullable = false)
+    private String smsLimit;
 
-	public String getDataLimit() {
-		return dataLimit;
-	}
+    @NotBlank(message = "Plan group is mandatory")
+    @Column(nullable = false)
+    private String planGroup;
 
-	public void setDataLimit(String dataLimit) {
-		this.dataLimit = dataLimit;
-	}
+    @Positive(message = "Number of days must be positive")
+    @Column(nullable = false)
+    private int numberOfDay;
 
-	public String getCallLimit() {
-		return callLimit;
-	}
+    // Additional charge attributes (optional)
+    @PositiveOrZero(message = "Additional charge per MB must be non-negative")
+    private BigDecimal extraChargePerMB;
 
-	public void setCallLimit(String callLimit) {
-		this.callLimit = callLimit;
-	}
+    @PositiveOrZero(message = "Additional charge per call must be non-negative")
+    private BigDecimal extraChargePerCall;
 
-	public String getSmsLimit() {
-		return smsLimit;
-	}
-
-	public void setSmsLimit(String smsLimit) {
-		this.smsLimit = smsLimit;
-	}
-
-	
-	
+    @PositiveOrZero(message = "Additional charge per SMS must be non-negative")
+    private BigDecimal extraChargePerSMS;
 }
+
