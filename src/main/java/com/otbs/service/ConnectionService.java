@@ -46,6 +46,11 @@ public class ConnectionService {
 		
 	}
 	
+	//get connection by id
+		public Connection getByConnectionId(int connectionId) {
+			return connectionRepository.findById(connectionId).get();
+		}
+	
 	public List<Connection> getAllConnections(){
 	   return connectionRepository.findAll()
 			                       .stream()

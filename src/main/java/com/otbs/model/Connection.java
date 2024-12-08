@@ -1,9 +1,8 @@
 package com.otbs.model;
 
-import java.time.LocalDate;
+
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -16,12 +15,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
- 
+
+@AllArgsConstructor
+@NoArgsConstructor
+
 
 @Entity
 @Table(name="connection")
@@ -34,26 +36,31 @@ public class Connection {
 	// Many connections can belong to one customer
 	@ManyToOne
 	@JoinColumn(name = "customer_id", nullable = false)
+	@JsonIgnoreProperties("connections")
+
 	private Customer customerObj;
 	
+    //@NotBlank(message = "Connection Type cannot be blank")
 	@Column(nullable = false)
 	private String connectionType;
-	
+    
+   // @NotBlank(message = "Network Type cannot be blank")
 	@Column(nullable = false)
 	private String networkType;
 	
 	@Column(nullable = false)
 	private float processingFee;
 	
+   // @NotBlank(message = "Activation date cannot be blank")
+	@Column(nullable = false)
+	private String activationdate;
+	
 	// Many connections can be associated with one outlet
 	@ManyToOne
 	@JoinColumn(name = "outlet_id", nullable = false)
 	private Outlet outletObj;
 	
-	@Column(nullable = false)
-	@JsonFormat(pattern = "dd-MM-yyyy")
-	private LocalDate activationdate;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "planId")
 		private Plan plan;
@@ -130,13 +137,15 @@ public class Connection {
 
 	}
 
-	public LocalDate getActivationdate() {
+	public String getActivationdate() {
 		return activationdate;
 	}
 
-	public void setActivationdate(LocalDate activationdate) {
+	public void setActivationdate(String activationdate) {
 		this.activationdate = activationdate;
 	}
+
+
 	
 	 
 	 
