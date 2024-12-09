@@ -46,6 +46,12 @@ public class ConnectionController {
 	public List<Connection> getAllConnections(){
 		return connectionService.getAllConnections();
 	}
+	
+
+	@GetMapping("{connectionId}")
+	public Connection getByConnectionId(@PathVariable int connectionId) {
+		return connectionService.getByConnectionId(connectionId);
+	}
 
 
 
