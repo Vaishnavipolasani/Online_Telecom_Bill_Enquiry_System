@@ -2,15 +2,18 @@ package com.otbs.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-
-@Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+
+@Entity
 public class Plan {
 
     @Id

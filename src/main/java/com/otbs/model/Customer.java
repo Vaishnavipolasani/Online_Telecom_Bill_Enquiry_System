@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+@AllArgsConstructor
 @NoArgsConstructor
 
 @Entity
@@ -37,6 +37,7 @@ public class Customer {
 	    private String gender;
 	
 	@OneToMany(mappedBy = "customerObj", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnoreProperties("customerObj")
     private List<Connection> connections;
 	
 	
