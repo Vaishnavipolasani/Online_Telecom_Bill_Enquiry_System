@@ -49,6 +49,20 @@ public class CustomerService {
  		}
 	}
 	
+	
+	public Customer registerCustomer(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    
+    public Customer authenticate(String username, String password) {
+        Customer customer = customerRepository.findByUsernameAndPassword(username, password);
+        if (customer != null) {
+            return customer;
+        }
+        return null;
+    }
+	
 	  
 
 }

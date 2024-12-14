@@ -4,8 +4,11 @@ package com.otbs.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
 import com.otbs.exception.InvalidEntityException;
 import com.otbs.model.Plan;
+
 
 public interface PlanService {
 

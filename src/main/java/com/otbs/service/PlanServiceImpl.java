@@ -139,4 +139,16 @@ public class PlanServiceImpl implements PlanService {
         }
         planRepository.deleteById(id);
     }
+
+	@Override
+	public Plan createPlan(Plan plan) throws InvalidEntityException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Plan updatePlan(int id, Plan updatedPlan) throws InvalidEntityException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
