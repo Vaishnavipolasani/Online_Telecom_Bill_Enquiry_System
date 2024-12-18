@@ -1,33 +1,41 @@
 package com.otbs.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.otbs.model.Customer;
 import com.otbs.service.CustomerService;
+import com.otbs.service.EmailService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("api/customers/")
+@RequestMapping("/api/customers")
 public class CustomerController {
-	
-	@Autowired
-	private CustomerService customerService;
-	
-	public CustomerController(CustomerService customerService) {
-		this.customerService=customerService;
-	}
-	
-	@PostMapping("/register")
+
+    @Autowired
+    private CustomerService customerService;
+
+    @Autowired
+    private EmailService emailService; // Add EmailService
+
+    @PostMapping("/register")
     public Customer registerCustomer(@RequestBody Customer customer) {
-        return customerService.registerCustomer(customer);
+        // Register the customer
+        Customer registeredCustomer = customerService.registerCustomer(customer);
+
+        // Send a confirmation email
+        emailService.sendThankYouEmail(registeredCustomer.getEmail(), registeredCustomer.getName());
+
+        return registeredCustomer;
     }
-    
+
+    @GetMapping("/viewallcustomers")
+    public List<Customer> getAllCustomers() {
+        return customerService.getAllCustomers();
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Customer customer) {
         String username = customer.getUsername();
@@ -39,18 +47,4 @@ public class CustomerController {
         }
         return ResponseEntity.status(401).body("Invalid credentials");
     }
-
-	
-	@PostMapping("apply")
-	public  Customer applyForConnection(@RequestBody Customer customer) {
-		return customerService.applyForConnection(customer);
-	}
-	
-	@PutMapping("update/{customerId}")
-	public Customer updateCustomer(@RequestBody Customer customer,@PathVariable int customerId) {
-		return customerService.updateCustomer(customer, customerId);
-	}
-
-
-
 }
