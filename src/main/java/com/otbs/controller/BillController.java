@@ -1,5 +1,6 @@
 package com.otbs.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +18,15 @@ public class BillController {
     @Autowired
     private BillService billService;
 
-//    @PostMapping("/generate")
-//    public ResponseEntity<String> generateBills() {
-////        billService.generateBillsForPostpaidConnections();
-//        return ResponseEntity.ok("Bills generated successfully.");
-//    }
-//
-//    @PostMapping("/apply-late-fee/{billId}")
-//    public ResponseEntity<String> applyLateFee(@PathVariable int billId) {
-////        Optional<Bill> optionalBill = billService.getBillById(billId);
-//        if (optionalBill.isPresent()) {
-////            billService.applyLatePaymentFee(optionalBill.get());
-//            return ResponseEntity.ok("Late payment fee applied successfully.");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bill not found.");
-//        }
-//    }
-}
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<Bill>> getBillsByCustomerId(@PathVariable int customerId) {
+        List<Bill> bills = billService.getBillsByCustomerId(customerId);
+        if (bills.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(bills);
+    }
+  }
+
 
 

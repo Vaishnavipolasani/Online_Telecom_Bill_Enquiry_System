@@ -50,12 +50,12 @@ public class Plan {
 
     // Additional charge attributes (optional)
     @PositiveOrZero(message = "Additional charge per MB must be non-negative")
-    private BigDecimal extraChargePerMB;
+    private float extraChargePerMB;
 
     @PositiveOrZero(message = "Additional charge per call must be non-negative")
-    private BigDecimal extraChargePerCall;
+    private float extraChargePerCall;
 
     @PositiveOrZero(message = "Additional charge per SMS must be non-negative")
-    private BigDecimal extraChargePerSMS;
+    private float extraChargePerSMS;
 }
 

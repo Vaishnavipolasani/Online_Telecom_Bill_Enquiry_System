@@ -1,6 +1,7 @@
 package com.otbs.model;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -53,7 +54,7 @@ public class Connection {
 	
    // @NotBlank(message = "Activation date cannot be blank")
 	@Column(nullable = false)
-	private String activationdate;
+	private LocalDate activationdate;
 	
 	// Many connections can be associated with one outlet
 	@ManyToOne
@@ -137,13 +138,23 @@ public class Connection {
 
 	}
 
-	public String getActivationdate() {
+	public LocalDate getActivationdate() {
 		return activationdate;
 	}
 
-	public void setActivationdate(String activationdate) {
+	public void setActivationdate(LocalDate activationdate) {
 		this.activationdate = activationdate;
 	}
+
+	public List<Complaint> getComplaintsRaised() {
+		return complaintsRaised;
+	}
+
+	public void setComplaintsRaised(List<Complaint> complaintsRaised) {
+		this.complaintsRaised = complaintsRaised;
+	}
+
+	
 
 
 	
