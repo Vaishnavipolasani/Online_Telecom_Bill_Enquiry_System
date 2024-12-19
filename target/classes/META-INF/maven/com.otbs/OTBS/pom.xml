@@ -76,6 +76,16 @@
     <version>3.0.2</version>
 </dependency>
 
+
+
+<!---for send message to mobile number -->
+<dependency>
+    <groupId>com.twilio.sdk</groupId>
+    <artifactId>twilio</artifactId>
+    <version>8.25.0</version>
+</dependency>
+
+
 <!-- Hibernate Validator (Reference Implementation for Jakarta Validation) -->
 <dependency>
     <groupId>org.hibernate.validator</groupId>

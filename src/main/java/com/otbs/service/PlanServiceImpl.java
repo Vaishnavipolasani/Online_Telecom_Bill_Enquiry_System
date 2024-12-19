@@ -2,6 +2,7 @@ package com.otbs.service;
 
 import com.otbs.exception.InvalidEntityException;
 import com.otbs.model.Plan;
+import com.otbs.model.Plan.PlanStatus;
 import com.otbs.repository.PlanRepository;
 
 import jakarta.validation.Valid;
@@ -114,6 +115,21 @@ public class PlanServiceImpl implements PlanService {
 //                 });
   
     }
+    
+    
+    
+    @Override
+    public List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException {
+        logger.info("Fetching plans with status: {}", status);
+        List<Plan> plans = planRepository.findByStatus(status);
+        if (plans.isEmpty()) {
+            throw new InvalidEntityException("No plans found with status: " + status);
+        }
+        return plans;
+    }
+    
+    
+    
 
   //  @Override
    // @Transactional

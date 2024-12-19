@@ -12,6 +12,6 @@ public interface BillService {
     List<Bill> getBillsByCustomerId(int customerId);
     
     //new
-	List<Bill> getAllBills();
-	Optional<Bill> getBillById(int billId);
+//	List<Bill> getAllBills();
+//	Optional<Bill> getBillById(int billId);
 }

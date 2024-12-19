@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.otbs.exception.InvalidEntityException;
 import com.otbs.model.Plan;
+import com.otbs.model.Plan.PlanStatus;
 
 
 public interface PlanService {
@@ -25,6 +26,8 @@ public interface PlanService {
     List<Plan> getPlansByDataLimit(String dataLimit) throws InvalidEntityException;
     
     Optional<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException;
+    
+    List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException;
     
 //    for the admin part
     

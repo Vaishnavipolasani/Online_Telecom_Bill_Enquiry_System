@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.otbs.model.Plan;
+import com.otbs.model.Plan.PlanStatus;
+
 import java.util.List;
 
 @Repository
@@ -25,4 +27,6 @@ public interface PlanRepository extends JpaRepository<Plan, Integer> {
    // Custom method for searching based on the numberOfDay
     Optional<Plan> findByNumberOfDay(int numberOfDay);
     
+    
+    List<Plan> findByStatus(PlanStatus status);
 }

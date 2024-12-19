@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -57,5 +58,15 @@ public class Plan {
 
     @PositiveOrZero(message = "Additional charge per SMS must be non-negative")
     private float extraChargePerSMS;
+    
+    
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Connection> connections;
+    
+    
+    public enum PlanStatus {
+        ACTIVE,
+        INACTIVE
+    }
 }
 

@@ -10,6 +10,15 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
+    
+    
+    public void sendEmail(String toEmail, String subject, String messageText) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(messageText);
+        mailSender.send(message);
+    }
 
     public void sendThankYouEmail(String toEmail, String customerName) {
         // Create the email message
