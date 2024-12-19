@@ -1,7 +1,7 @@
 package com.otbs.model;
 
-
 import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -16,15 +16,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
-@AllArgsConstructor
-@NoArgsConstructor
-
+ 
 
 @Entity
 @Table(name="connection")
@@ -37,31 +34,22 @@ public class Connection {
 	// Many connections can belong to one customer
 	@ManyToOne
 	@JoinColumn(name = "customer_id", nullable = false)
-	@JsonIgnoreProperties("connections")
-
 	private Customer customerObj;
 	
-    //@NotBlank(message = "Connection Type cannot be blank")
 	@Column(nullable = false)
 	private String connectionType;
-    
-   // @NotBlank(message = "Network Type cannot be blank")
+	
 	@Column(nullable = false)
 	private String networkType;
 	
 	@Column(nullable = false)
 	private float processingFee;
 	
-   // @NotBlank(message = "Activation date cannot be blank")
-	@Column(nullable = false)
-	private LocalDate activationdate;
-	
 	// Many connections can be associated with one outlet
 	@ManyToOne
 	@JoinColumn(name = "outlet_id", nullable = false)
 	private Outlet outletObj;
 	
-
 	@ManyToOne
 	@JoinColumn(name = "planId")
 		private Plan plan;
@@ -135,30 +123,26 @@ public class Connection {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	private LocalDate activateDate;
 
+	public LocalDate getActivateDate() {
+		return activateDate;
 	}
 
-	public LocalDate getActivationdate() {
-		return activationdate;
+	public void setActivateDate(LocalDate activateDate) {
+		this.activateDate = activateDate;
 	}
-
-	public void setActivationdate(LocalDate activationdate) {
-		this.activationdate = activationdate;
-	}
-
-	public List<Complaint> getComplaintsRaised() {
-		return complaintsRaised;
-	}
-
-	public void setComplaintsRaised(List<Complaint> complaintsRaised) {
-		this.complaintsRaised = complaintsRaised;
-	}
-
-	
-
-
-	
-	 
+//	private ChronoLocalDate activateDate;
+//
+//	public ChronoLocalDate getActivateDate() {
+//		return activateDate;
+//	}
+//
+//	public void setActivateDate(ChronoLocalDate activateDate) {
+//		this.activateDate = activateDate;
+//	}
+//	 
 	 
 }
 	

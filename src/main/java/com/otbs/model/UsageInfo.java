@@ -1,5 +1,8 @@
 package com.otbs.model;
 
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -66,6 +69,13 @@ public int getInternationalCalls() {
 }
 public void setInternationalCalls(int internationalCalls) {
 	this.internationalCalls = internationalCalls;
+}
+private LocalDate date;
+public LocalDate getDate() {
+	return date;
+}
+public void setDate(LocalDate date) {
+	this.date = date;
 }
 
 }

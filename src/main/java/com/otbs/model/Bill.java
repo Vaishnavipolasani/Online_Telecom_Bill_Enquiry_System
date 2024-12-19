@@ -1,6 +1,10 @@
 package com.otbs.model;
 
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +15,7 @@ public class Bill {
     private int billId;
 
     // Relationship to Connection
+    @JsonIgnoreProperties({"customerObj", "plan"})
     @ManyToOne
     @JoinColumn(name = "connectionId", nullable = false)
     private Connection connection;  // Foreign key to Connection
@@ -120,4 +125,14 @@ public class Bill {
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
+    public float getLatePaymentFee() {
+		return LatePaymentFee;
+	}
+
+	public void setLatePaymentFee(float latePaymentFee) {
+		LatePaymentFee = latePaymentFee;
+	}
+
+	private float LatePaymentFee;
+    
 }
