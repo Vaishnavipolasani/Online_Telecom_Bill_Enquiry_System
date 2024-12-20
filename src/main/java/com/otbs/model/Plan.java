@@ -48,6 +48,11 @@ public class Plan {
     @Positive(message = "Number of days must be positive")
     @Column(nullable = false)
     private int numberOfDay;
+    
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Plan status is mandatory")
+    @Column(nullable = false)
+    private PlanStatus status;
 
     // Additional charge attributes (optional)
     @PositiveOrZero(message = "Additional charge per MB must be non-negative")
@@ -60,13 +65,23 @@ public class Plan {
     private float extraChargePerSMS;
     
     
+//    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Connection> connections;
+    
+    
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Connection> connections;
     
+    
+//    public enum PlanStatus {
+//        ACTIVE,
+//        INACTIVE
+//    }
     
     public enum PlanStatus {
         ACTIVE,
         INACTIVE
     }
+    
 }
 

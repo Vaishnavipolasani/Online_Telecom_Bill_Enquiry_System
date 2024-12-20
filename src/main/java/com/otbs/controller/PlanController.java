@@ -63,11 +63,22 @@ public class PlanController {
         return ResponseEntity.ok(planService.getPlansByNumberOfDay(numberOfDay).orElse(null));
     }
 
+//    @GetMapping("/status/{status}")
+//    public ResponseEntity<List<Plan>> getPlansByStatus(@PathVariable PlanStatus status) throws InvalidEntityException {
+//        List<Plan> plans = planService.getPlansByStatus(status);
+//        return ResponseEntity.ok(plans);
+//    }
+    
+    
+    
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Plan>> getPlansByStatus(@PathVariable PlanStatus status) throws InvalidEntityException {
         List<Plan> plans = planService.getPlansByStatus(status);
         return ResponseEntity.ok(plans);
     }
+    
+    
+//    for the admin...
 
     @PostMapping("/add")
     public ResponseEntity<Plan> createPlan(@Valid @RequestBody Plan plan) throws InvalidEntityException {

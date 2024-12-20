@@ -27,6 +27,7 @@ public interface PlanRepository extends JpaRepository<Plan, Integer> {
    // Custom method for searching based on the numberOfDay
     Optional<Plan> findByNumberOfDay(int numberOfDay);
     
+//    List<Plan> findByStatus(PlanStatus status);
     
     List<Plan> findByStatus(PlanStatus status);
 }

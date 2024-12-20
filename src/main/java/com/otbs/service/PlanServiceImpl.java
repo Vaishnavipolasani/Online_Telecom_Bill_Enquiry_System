@@ -118,6 +118,19 @@ public class PlanServiceImpl implements PlanService {
     
     
     
+//    @Override
+//    public List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException {
+//        logger.info("Fetching plans with status: {}", status);
+//        List<Plan> plans = planRepository.findByStatus(status);
+//        if (plans.isEmpty()) {
+//            throw new InvalidEntityException("No plans found with status: " + status);
+//        }
+//        return plans;
+//    }
+    
+    
+    
+    
     @Override
     public List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException {
         logger.info("Fetching plans with status: {}", status);
