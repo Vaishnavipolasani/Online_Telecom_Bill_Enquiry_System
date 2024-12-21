@@ -11,7 +11,4 @@ public interface BillService {
     void generateBillsForAllConnections(); // Scheduler method
     List<Bill> getBillsByCustomerId(int customerId);
     
-    //new
-//	List<Bill> getAllBills();
-//	Optional<Bill> getBillById(int billId);
 }
