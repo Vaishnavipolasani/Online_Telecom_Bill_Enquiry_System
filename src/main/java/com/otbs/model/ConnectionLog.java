@@ -1,5 +1,6 @@
 package com.otbs.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -11,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,10 +36,10 @@ public class ConnectionLog {
 	private String connectionType;
 	
 	@Column(nullable = false)
-	private String changeType;
+	private String networkType;
 	
 	@Column(nullable = false)
-	private LocalDateTime datetime;
+	private LocalDate changedate;
 
 	public int getLogId() {
 		return logId;
@@ -63,21 +65,23 @@ public class ConnectionLog {
 		this.connectionType = connectionType;
 	}
 
-	public String getChangeType() {
-		return changeType;
+	public String getNetworkType() {
+		return networkType;
 	}
 
-	public void setChangeType(String changeType) {
-		this.changeType = changeType;
+	public void setNetworkType(String networkType) {
+		this.networkType = networkType;
 	}
 
-	public LocalDateTime getDatetime() {
-		return datetime;
+	public LocalDate getChangedate() {
+		return changedate;
 	}
 
-	public void setDatetime(LocalDateTime datetime) {
-		this.datetime = datetime;
+	public void setChangedate(LocalDate changedate) {
+		this.changedate = changedate;
 	}
+
+	
 	
 	
 	
