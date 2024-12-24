@@ -1,14 +1,16 @@
 package com.otbs.model;
 
-
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,149 +18,143 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
-
-
 @Entity
-@Table(name="connection")
+@Table(name = "connection")
 public class Connection {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(unique = true, nullable = false)
-	private int connectionId;
-	
-	// Many connections can belong to one customer
-	@ManyToOne
-	@JoinColumn(name = "customer_id", nullable = false)
-	@JsonIgnoreProperties("connections")
 
-	private Customer customerObj;
-	
-    //@NotBlank(message = "Connection Type cannot be blank")
-	@Column(nullable = false)
-	private String connectionType;
-    
-   // @NotBlank(message = "Network Type cannot be blank")
-	@Column(nullable = false)
-	private String networkType;
-	
-	@Column(nullable = false)
-	private float processingFee;
-	
-   // @NotBlank(message = "Activation date cannot be blank")
-	@Column(nullable = false)
-	private LocalDate activationdate;
-	
-	// Many connections can be associated with one outlet
-	@ManyToOne
-	@JoinColumn(name = "outlet_id", nullable = false)
-	private Outlet outletObj;
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int connectionId;
 
-	@ManyToOne
-	@JoinColumn(name = "planId")
-		private Plan plan;
+    // Many connections can belong to one customer
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id", nullable = false)
+    @JsonIgnoreProperties({"connections"}) // Prevent circular references for customer
+    @NotNull(message = "Customer object cannot be null")
+    private Customer customerObj;
 
-	@OneToMany(mappedBy = "connection", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties("connection")
-	private List<Complaint> complaintsRaised;
-	
-	 public Plan getPlan() {
-		return plan;
-	}
+    @NotBlank(message = "Connection type cannot be blank")
+    @Column(nullable = false)
+    private String connectionType;
 
-	public void setPlan(Plan plan) {
-		this.plan = plan;
-	}
+    @NotBlank(message = "Network type cannot be blank")
+    private String networkType;
 
-	@Column(nullable = false)
-	private String status;
+    private double processingFee;
 
-	public int getConnectionId() {
-		return connectionId;
-	}
+    @NotNull(message = "Activation date cannot be null")
+    @JsonProperty("activationDate") // Ensure it maps correctly in JSON
+    @JsonFormat(pattern = "yyyy-MM-dd") // Specify the format for LocalDate
+    private LocalDate activationdate;
 
-	public void setConnectionId(int connectionId) {
-		this.connectionId = connectionId;
-	}
+    // Many connections can be associated with one outlet
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "outlet_id", nullable = false)
+    @NotNull(message = "Outlet object cannot be null")
+    @JsonIgnoreProperties({"connections"}) // Prevent circular references for outlet
+    private Outlet outletObj;
 
-	public Customer getCustomerObj() {
-		return customerObj;
-	}
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "planId")
+    @JsonIgnoreProperties({"connections"}) // Prevent circular references for plan
+    private Plan plan;
 
-	public void setCustomerObj(Customer customerObj) {
-		this.customerObj = customerObj;
-	}
+    @OneToMany(mappedBy = "connection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("connection") // Prevent circular references for complaints
+    private List<Complaint> complaintsRaised;
 
-	public String getConnectionType() {
-		return connectionType;
-	}
+    @NotBlank(message = "Status cannot be blank")
+    private String status;
 
-	public void setConnectionType(String connectionType) {
-		this.connectionType = connectionType;
-	}
+    // Getters and Setters
 
-	public String getNetworkType() {
-		return networkType;
-	}
+    public int getConnectionId() {
+        return connectionId;
+    }
 
-	public void setNetworkType(String networkType) {
-		this.networkType = networkType;
-	}
+    public void setConnectionId(int connectionId) {
+        this.connectionId = connectionId;
+    }
 
-	public float getProcessingFee() {
-		return processingFee;
-	}
+    public Customer getCustomerObj() {
+        return customerObj;
+    }
 
-	public void setProcessingFee(float processingFee) {
-		this.processingFee = processingFee;
-	}
+    public void setCustomerObj(Customer customerObj) {
+        this.customerObj = customerObj;
+    }
 
-	public Outlet getOutletObj() {
-		return outletObj;
-	}
+    public String getConnectionType() {
+        return connectionType;
+    }
 
-	public void setOutletObj(Outlet outletObj) {
-		this.outletObj = outletObj;
-	}
+    public void setConnectionType(String connectionType) {
+        this.connectionType = connectionType;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getNetworkType() {
+        return networkType;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
+    public void setNetworkType(String networkType) {
+        this.networkType = networkType;
+    }
 
-	}
+    public double getProcessingFee() {
+        return processingFee;
+    }
 
-	public LocalDate getActivationdate() {
-		return activationdate;
-	}
+    public void setProcessingFee(double processingFee) {
+        this.processingFee = processingFee;
+    }
 
-	public void setActivationdate(LocalDate activationdate) {
-		this.activationdate = activationdate;
-	}
+    public LocalDate getActivationdate() {
+        return activationdate;
+    }
 
-	public List<Complaint> getComplaintsRaised() {
-		return complaintsRaised;
-	}
+    public void setActivationdate(LocalDate activationdate) {
+        this.activationdate = activationdate;
+    }
 
-	public void setComplaintsRaised(List<Complaint> complaintsRaised) {
-		this.complaintsRaised = complaintsRaised;
-	}
+    public Outlet getOutletObj() {
+        return outletObj;
+    }
 
-	
+    public void setOutletObj(Outlet outletObj) {
+        this.outletObj = outletObj;
+    }
 
+    public Plan getPlan() {
+        return plan;
+    }
 
-	
-	 
-	 
+    public void setPlan(Plan plan) {
+        this.plan = plan;
+    }
+
+    public List<Complaint> getComplaintsRaised() {
+        return complaintsRaised;
+    }
+
+    public void setComplaintsRaised(List<Complaint> complaintsRaised) {
+        this.complaintsRaised = complaintsRaised;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
-	

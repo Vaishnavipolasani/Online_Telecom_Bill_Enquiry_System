@@ -1,8 +1,6 @@
 package com.otbs.service;
 
-
 import java.time.LocalDate;
-
 import java.util.List;
 import java.util.Properties;
 
@@ -17,10 +15,16 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.*;
+import org.springframework.stereotype.Service;
 
-import com.otbs.model.*;
-import com.otbs.repository.*;
+import com.otbs.model.Bill;
+import com.otbs.model.Connection;
+import com.otbs.model.Plan;
+import com.otbs.model.UsageInfo;
+import com.otbs.repository.BillRepository;
+import com.otbs.repository.ConnectionRepository;
+import com.otbs.repository.PlanRepository;
+import com.otbs.repository.UsageInfoRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -59,7 +63,7 @@ public class BillServiceImpl implements BillService {
             Bill existingBill = billRepository.findByConnectionAndUsage(connection, usage); //checking bill alredy there
             if (existingBill != null) {
             	System.out.println("problem solved");// bill already there
-            	mailsending();
+            	// mailsending();
             }
             else {
 
@@ -73,6 +77,8 @@ public class BillServiceImpl implements BillService {
 	            bill.setTotalAmount(totalCharges);
 	            bill.setStatus("Paid");
 	            billRepository.save(bill);
+	            
+	            
             }
         }
     }
@@ -88,14 +94,25 @@ public class BillServiceImpl implements BillService {
                 .orElseThrow(() -> new RuntimeException("Usage info not found"));
         
         Bill existingBill = billRepository.findByConnectionAndUsage(connection, usage); //checking bill alredy there
-        if (existingBill != null) System.out.println("problem solved");           // bill alredy there
-        else {                                                                     
+        if (existingBill != null) {
+            System.out.println("problem solved");  // bill alredy there
+            
+        }
+        else {
+        	
         // Calculate additional charges if usage exceeds limits
-        double additionalCharges = calculateAdditionalCharges(usage, plan);        // generate bill
-        double totalCharges = plan.getFixedRate() + additionalCharges;
-        double tax = totalCharges * 0.18; // Assuming 18% tax
-        double finalAmount = totalCharges + tax;
-
+        float additionalCharges = calculateAdditionalCharges(usage, plan);        // generate bill
+        float totalCharges = (float)(plan.getFixedRate() + additionalCharges);
+        float tax = (float) (totalCharges * 0.18); // Assuming 18% tax
+        int finalAmount = Math.round(totalCharges + tax);
+        
+        //new changes
+        LocalDate planstart=connection.getActivationdate();
+        LocalDate enddate=planend(connection.getActivationdate(),plan.getNumberOfDay());
+        LocalDate due=LocalDate.now().plusDays(15);
+        String planname=plan.getPlanName();
+        
+        
         // Create a new bill
         Bill bill = new Bill();
         bill.setConnection(connection);
@@ -104,8 +121,11 @@ public class BillServiceImpl implements BillService {
         bill.setTotalAmount(finalAmount);
         bill.setTax(tax);
         bill.setStatus("Unpaid");
-        bill.setDueDate(LocalDate.now().plusDays(15)); // Set due date
-        billRepository.save(bill);
+        bill.setDueDate(due); // Set due date
+        Bill generated_bill=billRepository.save(bill);
+        int  bill_id=generated_bill.getBillId();         // Get bill id
+
+        System.out.println("bill_id: " + bill_id);
 
         // Suspend service if the previous bill is unpaid
         if (bill.getStatus().equalsIgnoreCase("Unpaid") &&  //ignoring the case-sensitive means "unpaid" and "UNPAID" both are same 
@@ -116,19 +136,31 @@ public class BillServiceImpl implements BillService {
         
         //new to update the connection ...
         connection.setActivationdate(LocalDate.now());  //updating the last billing time 
-        connectionRepository.save(connection); 
+        connectionRepository.save(connection);
+        String customerEmail = connection.getCustomerObj().getEmail();
+
+        
+        mailsendingPost(bill_id,planname,planstart,enddate,totalCharges,tax,finalAmount,due,customerEmail); //billdate,charges,tax,total,duedate
+        
         }
+        
+        
+        
     }
 
     @Override
-    @Scheduled(cron = "0 * * * * ?") // Run daily at midnight
+    @Scheduled(cron = "30 * * * * ?") // Run daily at midnight
     public void generateBillsForAllConnections() {
         List<Connection> connections = connectionRepository.findAll(); //getting all the connection , i think we need to fetch the " active " connection
+        System.out.println(connections.size());
+        System.out.println(connections);
         for (Connection connection : connections) {
             if ("Prepaid".equalsIgnoreCase(connection.getConnectionType())) {
                 generatePrepaidBill(connection.getConnectionId());
-            } else if ("Postpaid".equalsIgnoreCase(connection.getConnectionType())) {
+                System.out.println("prepaid");
+            } else if ("postpaid".equalsIgnoreCase(connection.getConnectionType())) {
                 generatePostpaidBill(connection.getConnectionId());  //edited by me to check date 
+                System.out.println("postpaid");
             }
         }
         System.out.println("sivaraj- hear");
@@ -140,12 +172,12 @@ public class BillServiceImpl implements BillService {
         return billRepository.findByConnection_CustomerObj_CustomerId(customerId);
     }
 
-    private double calculateAdditionalCharges(UsageInfo usage, Plan plan) {
-        double dataCharges = Math.max(0, usage.getDataUsed() - Double.parseDouble(convertStringToInt(plan.getDataLimit())))
+    private float calculateAdditionalCharges(UsageInfo usage, Plan plan) {
+        float dataCharges = Math.max(0, usage.getDataUsed() - (convertStringToInt(plan.getDataLimit())))
                 * plan.getExtraChargePerMB();
-;        double callCharges = Math.max(0, usage.getCalls() - Double.parseDouble(convertStringToInt(plan.getCallLimit())))
+        float callCharges = Math.max(0, usage.getCalls() -(convertStringToInt(plan.getCallLimit())))
                 * plan.getExtraChargePerCall();
-        double smsCharges = Math.max(0, usage.getSms() - Double.parseDouble(convertStringToInt(plan.getSmsLimit())))
+        float smsCharges = Math.max(0, usage.getSms() - convertStringToInt(plan.getSmsLimit()))
                 * plan.getExtraChargePerSMS();
         return dataCharges + callCharges + smsCharges;
     }
@@ -153,9 +185,10 @@ public class BillServiceImpl implements BillService {
     
     //convert the string to integer for plan convertion 
     
-    public static String convertStringToInt(String input) {
+    public int convertStringToInt(String input) {
         // Remove any non-numeric characters from the string
-        return input.replaceAll("[^0-9]", "");
+        String quantity=input.replaceAll("[^0-9]", "");
+        return Integer.parseInt(quantity);
     }
     
     public static LocalDate planend(LocalDate date,int day) {
@@ -164,13 +197,13 @@ public class BillServiceImpl implements BillService {
     
     
     
-    public static void  mailsending() {
-    	
+    public static void  mailsendingPost(int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due,String email) {
+        // public static void  mailsending(){
     	 final String senderEmail = "sivarajc357@gmail.com";
          final String senderPassword = "qgcvyvzesaxvlfcz"; // Use App Password if 2FA is enabled
 
          // Receiver's email
-         String recipientEmail = "sivarajc2005@gmail.com";
+         String recipientEmail = email;
 
          // SMTP server properties
          Properties properties = new Properties();
@@ -281,17 +314,37 @@ public class BillServiceImpl implements BillService {
             	        + "            <p>Please find below the details of your bill:</p>"
             	        + "            <!-- Bill Details Table -->"
             	        + "            <table class=\"bill-details\">"
-            	        + "                <tr>"
+                        + "                <tr>"
             	        + "                    <th>Bill ID</th>"
             	        + "                    <td>{{billId}}</td>"
             	        + "                </tr>"
+                        + "                <tr>"
+            	        + "                    <th>Bill Issued Date</th>"
+            	        + "                    <td>{{issueDate}}</td>"
+            	        + "                </tr>"
+                        + "                <tr>"
+            	        + "                    <th>Plan Name</th>"
+            	        + "                    <td>{{planName}}</td>"
+            	        + "                </tr>"
+                        + "                <tr>"
+            	        + "                    <th>Bill Cycle</th>"
+            	        + "                    <td>{{billCycle}}</td>"
+            	        + "                </tr>"
+                        + "                <tr>"
+            	        + "                    <th>Total Charges</th>"
+            	        + "                    <td>{{totalCharges}}</td>"
+            	        + "                </tr>"
+            	        + "                <tr>"
+            	        + "                    <th>Tax</th>"
+            	        + "                    <td>{{tax}}</td>"
+            	        + "                </tr>"
+            	        + "                <tr>"
+            	        + "                    <th>Final Amount</th>"
+            	        + "                    <td>{{finalAmount}}</td>"
+            	        + "                </tr><br>"
             	        + "                <tr>"
             	        + "                    <th>Due Date</th>"
             	        + "                    <td>{{dueDate}}</td>"
-            	        + "                </tr>"
-            	        + "                <tr>"
-            	        + "                    <th>Total Amount</th>"
-            	        + "                    <td>{{totalAmount}}</td>"
             	        + "                </tr>"
             	        + "            </table>"
             	        + "            <!-- Payment Button -->"
@@ -308,13 +361,20 @@ public class BillServiceImpl implements BillService {
             	        + "        </div>"
             	        + "    </div>"
             	        + "</body>"
-            	        + "</html>".replace("{{billId}}", "12345")
-                        .replace("{{dueDate}}", "2024-12-31")
-                        .replace("{{totalAmount}}", "$100")
-                        .replace("{{paymentLink}}", "https://payment.example.com");
+            	        + "</html>";
+             //int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due
+            
+             String emailBody = htmlContent.replace("{{billId}}", String.valueOf(bill_id))
+                     .replace("{{issueDate}}", LocalDate.now().toString())
+                     .replace("{{planName}}", planname)
+                     .replace("{{billCycle}}", planstart.toString()+" to "+enddate.toString())
+                     .replace("{{totalCharges}}", String.valueOf(totalCharges))
+                     .replace("{{tax}}", String.valueOf(tax))
+                     .replace("{{finalAmount}}", String.valueOf(finalAmount))
+                     .replace("{{dueDate}}", due.toString());
 
              // Set the content of the email to HTML
-             message.setContent(htmlContent, "text/html; charset=utf-8");
+             message.setContent(emailBody, "text/html; charset=utf-8");
 
              // Send the email
              Transport.send(message);
