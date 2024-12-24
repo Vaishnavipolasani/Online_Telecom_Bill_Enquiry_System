@@ -65,18 +65,10 @@ public class Plan {
     private float extraChargePerSMS;
     
     
-//    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<Connection> connections;
-    
-    
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Connection> connections;
     
-    
-//    public enum PlanStatus {
-//        ACTIVE,
-//        INACTIVE
-//    }
+
     
     public enum PlanStatus {
         ACTIVE,
