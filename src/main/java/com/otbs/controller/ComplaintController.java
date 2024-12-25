@@ -36,7 +36,15 @@ public class ComplaintController {
     }
     @GetMapping("/{id}")
     public String viewcomplaint(@PathVariable int id) {
-    	complaintService.viewcomplaint(id);
+    	complaintService.viewComplaint(id);
     	return "complaint with id"+id;
+    }  
+    @PostMapping(value = "/resolve", consumes = "application/x-www-form-urlencoded")
+    public Complaint resolveComplaint(
+            @RequestParam int complaintId,
+            @RequestParam int executiveId,
+            @RequestParam String resolutionDetails) {
+        return complaintService.solveComplaint(complaintId, executiveId, resolutionDetails);
     }
+    
 }
