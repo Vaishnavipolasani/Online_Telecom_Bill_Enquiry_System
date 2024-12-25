@@ -6,6 +6,7 @@ import com.otbs.repository.ConnectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ public class ConnectionService {
     
 
     @Autowired
-    private ConnectionLogService connectionLogService; // Add ConnectionLogService
+    private ConnectionLogService connectionLogService; 
 
     public ConnectionService(ConnectionRepository connectionRepository) {
     	this.connectionRepository = connectionRepository;
@@ -123,6 +124,18 @@ public class ConnectionService {
         }
 
         connection.setProcessingFee(processingFee);
+    }
+    
+    public List<Connection> getConnectionsNearingExpiry() {
+        List<Connection> connections = connectionRepository.findAll();
+
+        return connections.stream()
+                .filter(connection -> {
+                    LocalDate expiryDate = connection.getActivationdate().plusDays(connection.getPlan().getNumberOfDay());
+                    LocalDate today = LocalDate.now();
+                    return expiryDate.isAfter(today) && expiryDate.isBefore(today.plusDays(7));
+                })
+                .collect(Collectors.toList());
     }
     
 }

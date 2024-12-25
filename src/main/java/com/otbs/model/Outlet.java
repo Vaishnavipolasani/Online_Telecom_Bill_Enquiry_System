@@ -26,7 +26,7 @@ public class Outlet {
     private String location;
 
     @Column(name = "availablesims", nullable = false)
-    private Integer availableSIMs = 0; // Default to 0 to avoid null values
+    private Integer availableSIMs = 50; 
 
 	public Integer getOutletId() {
 		return outletId;
