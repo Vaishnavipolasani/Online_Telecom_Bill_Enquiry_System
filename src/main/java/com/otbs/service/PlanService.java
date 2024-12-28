@@ -27,8 +27,6 @@ public interface PlanService {
     
     Optional<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException;
     
-//    List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException;
-    
     List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException;
     
 //    for the admin part

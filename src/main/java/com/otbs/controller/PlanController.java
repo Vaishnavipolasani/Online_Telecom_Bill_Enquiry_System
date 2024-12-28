@@ -58,19 +58,13 @@ public class PlanController {
         return ResponseEntity.ok(plans);
     }
 
+//    if i passed number of day = 30 it will not work ....only for this value.....
     @GetMapping("/days/{numberOfDay}")
     public ResponseEntity<Plan> getPlansByNumberOfDay(@PathVariable int numberOfDay) throws InvalidEntityException {
         return ResponseEntity.ok(planService.getPlansByNumberOfDay(numberOfDay).orElse(null));
     }
 
-//    @GetMapping("/status/{status}")
-//    public ResponseEntity<List<Plan>> getPlansByStatus(@PathVariable PlanStatus status) throws InvalidEntityException {
-//        List<Plan> plans = planService.getPlansByStatus(status);
-//        return ResponseEntity.ok(plans);
-//    }
-    
-    
-    
+ 
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Plan>> getPlansByStatus(@PathVariable PlanStatus status) throws InvalidEntityException {
         List<Plan> plans = planService.getPlansByStatus(status);

@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class TwilioService {
 
-//    @Value("${twilio.account.sid}")
-    private String accountSid = "ABC@gmail.com";
+    @Value("${twilio.account.sid}")
+    private String accountSid;
 
-//    @Value("${twilio.auth.token}")
-    private String authToken = "xyz";
+    @Value("${twilio.auth.token}")
+    private String authToken;
 
-//    @Value("${twilio.phone.number}")
-    private String fromPhoneNumber="7529989668";
+    @Value("${twilio.phone.number}")
+    private String fromPhoneNumber;
 
     @PostConstruct
     public void initTwilio() {

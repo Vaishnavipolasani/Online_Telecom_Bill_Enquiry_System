@@ -65,7 +65,7 @@ public class Plan {
     private float extraChargePerSMS;
     
     
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Connection> connections;
     
 

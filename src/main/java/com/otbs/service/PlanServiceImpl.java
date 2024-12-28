@@ -48,14 +48,6 @@ public class PlanServiceImpl implements PlanService {
 //                });
     }
 
- //   @Override
-   // public Plan createPlan(@Valid Plan plan) throws InvalidEntityException {
-     //   logger.info("Creating new plan: {}", plan.getPlanName());
-       // if (planRepository.findByPlanName(plan.getPlanName()).isPresent()) {
-         //   throw new InvalidEntityException("Plan with name " + plan.getPlanName() + " already exists.");
-       // }
-       // return planRepository.save(plan);
-   // }
 
     @Override
     public Optional<Plan> getPlanByName(String planName) throws InvalidEntityException {
@@ -100,6 +92,26 @@ public class PlanServiceImpl implements PlanService {
         }
         return plans;
     }
+    
+    
+//    @Override
+//    public Optional<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException {
+//        logger.info("Fetching plan by number of days: {}", numberOfDay);
+//        try {
+//            Optional<Plan> plan = planRepository.findByNumberOfDay(numberOfDay);
+//            if (plan.isEmpty()) {
+//                throw new InvalidEntityException("Plan with " + numberOfDay + " days does not exist.");
+//            }
+//            logger.debug("Fetched Plan: {}", plan.get());
+//            return plan;
+//        } catch (Exception e) {
+//            logger.error("Error fetching plan by number of days", e);
+//            throw e;
+//        }
+//    }
+
+    
+    
 
     @Override
     public Optional<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException {
@@ -109,26 +121,7 @@ public class PlanServiceImpl implements PlanService {
             throw new InvalidEntityException("Plan with " + numberOfDay + " days does not exist.");
         }
         return plan;
-//        return planRepository.findByNumberOfDay(numberOfDay)
-//        		 .or(() -> {
-//                 	throw new InvalidEntityException("Plan with " + numberOfDay + " days does not exist.");
-//                 });
-  
     }
-    
-    
-    
-//    @Override
-//    public List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException {
-//        logger.info("Fetching plans with status: {}", status);
-//        List<Plan> plans = planRepository.findByStatus(status);
-//        if (plans.isEmpty()) {
-//            throw new InvalidEntityException("No plans found with status: " + status);
-//        }
-//        return plans;
-//    }
-    
-    
     
     
     @Override
@@ -141,43 +134,58 @@ public class PlanServiceImpl implements PlanService {
         return plans;
     }
     
+//    only for the admin...
+    
+    @Override
+    public Plan createPlan(@Valid Plan plan) throws InvalidEntityException {
+        logger.info("Creating new plan: {}", plan.getPlanName());
+        if (planRepository.findByPlanName(plan.getPlanName()).isPresent()) {
+            throw new InvalidEntityException("Plan with name " + plan.getPlanName() + " already exists.");
+        }
+        return planRepository.save(plan);
+    }
     
     
+    
+    @Override
+    @Transactional
+    public Plan updatePlan(int id, @Valid Plan updatedPlan) throws InvalidEntityException {
+        logger.info("Updating plan with ID: {}", id);
+        
+        // Check if another plan with the same name exists
+        if (planRepository.existsByPlanName(updatedPlan.getPlanName()) && 
+            !planRepository.findById(id).map(Plan::getPlanName).equals(updatedPlan.getPlanName())) {
+            throw new InvalidEntityException("Plan with name " + updatedPlan.getPlanName() + " already exists.");
+        }
+        
+        return planRepository.findById(id).map(existingPlan -> {
+            existingPlan.setPlanName(updatedPlan.getPlanName());
+            existingPlan.setFixedRate(updatedPlan.getFixedRate());
+            existingPlan.setDataLimit(updatedPlan.getDataLimit());
+            existingPlan.setCallLimit(updatedPlan.getCallLimit());
+            existingPlan.setSmsLimit(updatedPlan.getSmsLimit());
+            existingPlan.setPlanGroup(updatedPlan.getPlanGroup());
+            existingPlan.setNumberOfDay(updatedPlan.getNumberOfDay());
+            return planRepository.save(existingPlan);
+        }).orElseThrow(() -> new InvalidEntityException("Plan with ID " + id + " not found."));
+    }
 
-  //  @Override
-   // @Transactional
-   // public Plan updatePlan(int id, @Valid Plan updatedPlan) throws InvalidEntityException {
-     //   logger.info("Updating plan with ID: {}", id);
-       // return planRepository.findById(id).map(existingPlan -> {
-         //   existingPlan.setPlanName(updatedPlan.getPlanName());
-           // existingPlan.setFixedRate(updatedPlan.getFixedRate());
-           // existingPlan.setDataLimit(updatedPlan.getDataLimit());
-          //  existingPlan.setCallLimit(updatedPlan.getCallLimit());
-         //   existingPlan.setSmsLimit(updatedPlan.getSmsLimit());
-         //   existingPlan.setPlanGroup(updatedPlan.getPlanGroup());
-           // existingPlan.setNumberOfDay(updatedPlan.getNumberOfDay());
-      //      return planRepository.save(existingPlan);
-        //}).orElseThrow(() -> new InvalidEntityException("Plan with ID " + id + " not found."));
-  //  }
-
+    
     @Override
     public void deletePlanById(int id) throws InvalidEntityException {
         logger.info("Deleting plan with ID: {}", id);
-        if (!planRepository.existsById(id)) {
-            throw new InvalidEntityException("Plan with ID " + id + " does not exist.");
+        
+        // Check if the plan exists
+        Plan plan = planRepository.findById(id)
+            .orElseThrow(() -> new InvalidEntityException("Plan with ID " + id + " does not exist."));
+        
+        // Check if the status is active
+        if (plan.getStatus() == Plan.PlanStatus.ACTIVE) {
+            throw new InvalidEntityException("Plan with ID " + id + " is active and cannot be deleted.");
         }
+   
         planRepository.deleteById(id);
     }
 
-	@Override
-	public Plan createPlan(Plan plan) throws InvalidEntityException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public Plan updatePlan(int id, Plan updatedPlan) throws InvalidEntityException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

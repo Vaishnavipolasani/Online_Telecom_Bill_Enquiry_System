@@ -31,10 +31,10 @@ public class Customer {
 	private String email;
 	private String phoneNumber;
 	private String address;
-	 private String username;
-	    private String password;
-	    private String dob;
-	    private String gender;
+	private String username;
+	private String password;
+	private String dob;
+	private String gender;
 	
 	@OneToMany(mappedBy = "customerObj", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties("customerObj")

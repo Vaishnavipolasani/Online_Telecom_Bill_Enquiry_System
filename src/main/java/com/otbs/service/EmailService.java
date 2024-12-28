@@ -14,6 +14,9 @@ public class EmailService {
     
     public void sendEmail(String toEmail, String subject, String messageText) {
         SimpleMailMessage message = new SimpleMailMessage();
+        System.out.println("sender email id : "+toEmail);
+        System.out.println("subject sender email id : "+subject);
+        System.out.println("message sender email id : "+messageText); 
         message.setTo(toEmail);
         message.setSubject(subject);
         message.setText(messageText);
