@@ -185,11 +185,12 @@ public class BillServiceImpl implements BillService {
         return billRepository.findBillsByCustomerIdAndDateAfter(customerId, sixMonthsAgo);
     }
 
+    @Transactional
     public Boolean payBill(int billId){
         Bill bill = billRepository.findByBillId(billId);
         if(bill == null) return false;
         bill.setStatus("Paid");
-
+        billRepository.save(bill);
         return true;
     }
 
