@@ -9,6 +9,5 @@ public interface BillService {
     void generatePrepaidBill(int connectionId);
     void generatePostpaidBill(int connectionId);
     void generateBillsForAllConnections(); // Scheduler method
-    List<Bill> getBillsByCustomerId(int customerId);
     
 }

@@ -22,9 +22,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -46,7 +44,7 @@ public class Connection {
     @NotBlank(message = "Connection type cannot be blank")
     @Column(nullable = false)
     private String connectionType;
-
+   
     @NotBlank(message = "Network type cannot be blank")
     private String networkType;
 
@@ -54,7 +52,7 @@ public class Connection {
 
     @NotNull(message = "Activation date cannot be null")
     @JsonProperty("activationDate") // Ensure it maps correctly in JSON
-    @JsonFormat(pattern = "yyyy-MM-dd") // Specify the format for LocalDate
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate activationdate;
 
     // Many connections can be associated with one outlet

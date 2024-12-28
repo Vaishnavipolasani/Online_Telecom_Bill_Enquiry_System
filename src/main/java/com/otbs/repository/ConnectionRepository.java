@@ -11,9 +11,8 @@ import com.otbs.model.*;
 
 @Repository
 public interface ConnectionRepository extends JpaRepository<Connection, Integer>{
-	
-//	List<Connection> findByCustomerCustomerId(int userId);
-	List<Connection> findByConnectionTypeAndStatus(String planType ,String status);
-	
 
+
+	
 }
+

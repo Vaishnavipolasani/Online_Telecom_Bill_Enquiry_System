@@ -125,14 +125,16 @@ public class Bill {
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
-    public float getLatePaymentFee() {
-		return LatePaymentFee;
-	}
+    
+    
+//    public float getLatePaymentFee() {
+//		return LatePaymentFee;
+//	}
+//
+//	public void setLatePaymentFee(float latePaymentFee) {
+//		LatePaymentFee = latePaymentFee;
+//	}
 
-	public void setLatePaymentFee(float latePaymentFee) {
-		LatePaymentFee = latePaymentFee;
-	}
-
-	private float LatePaymentFee;
+//	private float LatePaymentFee;
     
 }

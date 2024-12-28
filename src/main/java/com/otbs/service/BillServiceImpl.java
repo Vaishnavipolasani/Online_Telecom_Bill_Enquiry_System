@@ -44,6 +44,7 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private PlanRepository planRepository;
 
+
     @Override
     @Transactional
     public void generatePrepaidBill(int connectionId) {
@@ -90,60 +91,63 @@ public class BillServiceImpl implements BillService {
                 .orElseThrow(() -> new RuntimeException("Connection not found"));
 
         Plan plan = connection.getPlan();
-        UsageInfo usage = usageInfoRepository.findByConnection(connection)
-                .orElseThrow(() -> new RuntimeException("Usage info not found"));
-        
-        Bill existingBill = billRepository.findByConnectionAndUsage(connection, usage); //checking bill alredy there
-        if (existingBill != null) {
-            System.out.println("problem solved");  // bill alredy there
+
+        if (LocalDate.now().isAfter(planend(connection.getActivationdate(),plan.getNumberOfDay()))){ 
+            UsageInfo usage = usageInfoRepository.findByConnection(connection)
+                    .orElseThrow(() -> new RuntimeException("Usage info not found"));
             
-        }
-        else {
-        	
-        // Calculate additional charges if usage exceeds limits
-        float additionalCharges = calculateAdditionalCharges(usage, plan);        // generate bill
-        float totalCharges = (float)(plan.getFixedRate() + additionalCharges);
-        float tax = (float) (totalCharges * 0.18); // Assuming 18% tax
-        int finalAmount = Math.round(totalCharges + tax);
-        
-        //new changes
-        LocalDate planstart=connection.getActivationdate();
-        LocalDate enddate=planend(connection.getActivationdate(),plan.getNumberOfDay());
-        LocalDate due=LocalDate.now().plusDays(15);
-        String planname=plan.getPlanName();
-        
-        
-        // Create a new bill
-        Bill bill = new Bill();
-        bill.setConnection(connection);
-        bill.setUsage(usage);
-        bill.setDate(LocalDate.now());
-        bill.setTotalAmount(finalAmount);
-        bill.setTax(tax);
-        bill.setStatus("Unpaid");
-        bill.setDueDate(due); // Set due date
-        Bill generated_bill=billRepository.save(bill);
-        int  bill_id=generated_bill.getBillId();         // Get bill id
+            Bill existingBill = billRepository.findByConnectionAndUsage(connection, usage); //checking bill alredy there
+            if (existingBill != null) {
 
-        System.out.println("bill_id: " + bill_id);
+                System.out.println("problem solved");  // bill alredy there
+                
+            }
+            else {
+                
+                // Calculate additional charges if usage exceeds limits
+                float additionalCharges = calculateAdditionalCharges(usage, plan);        // generate bill
 
-        // Suspend service if the previous bill is unpaid
-        if (bill.getStatus().equalsIgnoreCase("Unpaid") &&  //ignoring the case-sensitive means "unpaid" and "UNPAID" both are same 
-                LocalDate.now().isAfter(bill.getDueDate())) {
-            connection.setStatus("Blocked");
-            connectionRepository.save(connection);
-        }
-        
-        //new to update the connection ...
-        connection.setActivationdate(LocalDate.now());  //updating the last billing time 
-        connectionRepository.save(connection);
-        String customerEmail = connection.getCustomerObj().getEmail();
+                float totalCharges = (float)(plan.getFixedRate() + additionalCharges);
+                float tax = (float) (totalCharges * 0.18); // Assuming 18% tax
+                int finalAmount = Math.round(totalCharges + tax);
+                
+                //new changes
+                LocalDate planstart=connection.getActivationdate();
+                LocalDate enddate=planend(connection.getActivationdate(),plan.getNumberOfDay());
+                LocalDate due=LocalDate.now().plusDays(15);
+                String planname=plan.getPlanName();
+                
+                
+                // Create a new bill
+                Bill bill = new Bill();
+                bill.setConnection(connection);
+                bill.setUsage(usage);
+                bill.setDate(LocalDate.now());
+                bill.setTotalAmount(finalAmount);
+                bill.setTax(tax);
+                bill.setStatus("Unpaid");
+                bill.setDueDate(due); // Set due date
+                Bill generated_bill=billRepository.save(bill);
+                int  bill_id=generated_bill.getBillId();         // Get bill id
+                System.out.println("bill_id: " + bill_id);
 
-        
-        mailsendingPost(bill_id,planname,planstart,enddate,totalCharges,tax,finalAmount,due,customerEmail); //billdate,charges,tax,total,duedate
-        
-        }
-        
+                // Suspend service if the previous bill is unpaid
+                if (bill.getStatus().equalsIgnoreCase("Unpaid") &&  //ignoring the case-sensitive means "unpaid" and "UNPAID" both are same 
+                        LocalDate.now().isAfter(bill.getDueDate())) {
+                    connection.setStatus("Blocked");
+                    connectionRepository.save(connection);
+                }
+                
+                //new to update the connection ...
+                connection.setActivationdate(LocalDate.now());  //updating the last billing time 
+                connectionRepository.save(connection);
+                String customerEmail = connection.getCustomerObj().getEmail();
+
+                
+                mailsendingPost(bill_id,planname,planstart,enddate,totalCharges,tax,finalAmount,due,customerEmail,usage); //billdate,charges,tax,total,duedate
+                
+                }
+        } 
         
         
     }
@@ -166,10 +170,27 @@ public class BillServiceImpl implements BillService {
         System.out.println("sivaraj- hear");
     }
     
+    //Get All Bills
+    public List<Bill> getAllBillsByCustomerId(int customerId) {
+        return billRepository.findAllBillsByCustomerId(customerId);
+    }
 
-    @Override
-    public List<Bill> getBillsByCustomerId(int customerId) {
-        return billRepository.findByConnection_CustomerObj_CustomerId(customerId);
+    // Get unpaid bills for a specific customer
+    public List<Bill> getUnpaidBillsByCustomerId(int customerId) {
+        return billRepository.findUnpaidBillsByCustomerId(customerId);
+    }
+
+    public List<Bill> getBillsForLastSixMonth(int customerId) {
+        LocalDate sixMonthsAgo = LocalDate.now().minusMonths(6);
+        return billRepository.findBillsByCustomerIdAndDateAfter(customerId, sixMonthsAgo);
+    }
+
+    public Boolean payBill(int billId){
+        Bill bill = billRepository.findByBillId(billId);
+        if(bill == null) return false;
+        bill.setStatus("Paid");
+
+        return true;
     }
 
     private float calculateAdditionalCharges(UsageInfo usage, Plan plan) {
@@ -197,10 +218,10 @@ public class BillServiceImpl implements BillService {
     
     
     
-    public static void  mailsendingPost(int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due,String email) {
-        // public static void  mailsending(){
-    	 final String senderEmail = "sivarajc357@gmail.com";
-         final String senderPassword = "qgcvyvzesaxvlfcz"; // Use App Password if 2FA is enabled
+    public static void  mailsendingPost(int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due,String email,UsageInfo usage) {
+        BillEmailService mailTemplate = new BillEmailService();
+        final String senderEmail=mailTemplate.getSenderEmail();
+        final String senderPassword=mailTemplate.getSenderPassword();
 
          // Receiver's email
          String recipientEmail = email;
@@ -229,149 +250,20 @@ public class BillServiceImpl implements BillService {
              );
              message.setSubject("Beautiful HTML Email from Java"); // Email subject
 
-             
-             
 
-             // HTML content for the email body
-             String htmlContent = "<!DOCTYPE html>"
-            	        + "<html>"
-            	        + "<head>"
-            	        + "    <title>Bill Notification</title>"
-            	        + "    <style>"
-            	        + "        body {"
-            	        + "            font-family: Arial, sans-serif;"
-            	        + "            margin: 0;"
-            	        + "            padding: 0;"
-            	        + "            background-color: #f4f4f4;"
-            	        + "        }"
-            	        + "        .email-container {"
-            	        + "            max-width: 600px;"
-            	        + "            margin: 20px auto;"
-            	        + "            background-color: #ffffff;"
-            	        + "            border: 1px solid #e0e0e0;"
-            	        + "            border-radius: 8px;"
-            	        + "            overflow: hidden;"
-            	        + "            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
-            	        + "        }"
-            	        + "        .header {"
-            	        + "            background-color: #4CAF50;"
-            	        + "            color: #ffffff;"
-            	        + "            text-align: center;"
-            	        + "            padding: 20px;"
-            	        + "            font-size: 24px;"
-            	        + "        }"
-            	        + "        .content {"
-            	        + "            padding: 20px;"
-            	        + "            color: #333333;"
-            	        + "        }"
-            	        + "        .content p {"
-            	        + "            margin: 10px 0;"
-            	        + "            font-size: 16px;"
-            	        + "            line-height: 1.5;"
-            	        + "        }"
-            	        + "        .bill-details {"
-            	        + "            margin: 20px 0;"
-            	        + "            border-collapse: collapse;"
-            	        + "            width: 100%;"
-            	        + "        }"
-            	        + "        .bill-details th, .bill-details td {"
-            	        + "            border: 1px solid #dddddd;"
-            	        + "            text-align: left;"
-            	        + "            padding: 8px;"
-            	        + "        }"
-            	        + "        .bill-details th {"
-            	        + "            background-color: #f2f2f2;"
-            	        + "        }"
-            	        + "        .footer {"
-            	        + "            background-color: #f2f2f2;"
-            	        + "            color: #777777;"
-            	        + "            text-align: center;"
-            	        + "            padding: 15px;"
-            	        + "            font-size: 12px;"
-            	        + "        }"
-            	        + "        .button {"
-            	        + "            display: inline-block;"
-            	        + "            margin: 20px auto;"
-            	        + "            padding: 10px 20px;"
-            	        + "            font-size: 16px;"
-            	        + "            color: #ffffff;"
-            	        + "            background-color: #4CAF50;"
-            	        + "            text-decoration: none;"
-            	        + "            border-radius: 5px;"
-            	        + "            text-align: center;"
-            	        + "        }"
-            	        + "    </style>"
-            	        + "</head>"
-            	        + "<body>"
-            	        + "    <div class=\"email-container\">"
-            	        + "        <!-- Header -->"
-            	        + "        <div class=\"header\">"
-            	        + "            <strong>Your Bill Notification</strong>"
-            	        + "        </div>"
-            	        + "        <!-- Content -->"
-            	        + "        <div class=\"content\">"
-            	        + "            <p>Dear Customer,</p>"
-            	        + "            <p>Please find below the details of your bill:</p>"
-            	        + "            <!-- Bill Details Table -->"
-            	        + "            <table class=\"bill-details\">"
-                        + "                <tr>"
-            	        + "                    <th>Bill ID</th>"
-            	        + "                    <td>{{billId}}</td>"
-            	        + "                </tr>"
-                        + "                <tr>"
-            	        + "                    <th>Bill Issued Date</th>"
-            	        + "                    <td>{{issueDate}}</td>"
-            	        + "                </tr>"
-                        + "                <tr>"
-            	        + "                    <th>Plan Name</th>"
-            	        + "                    <td>{{planName}}</td>"
-            	        + "                </tr>"
-                        + "                <tr>"
-            	        + "                    <th>Bill Cycle</th>"
-            	        + "                    <td>{{billCycle}}</td>"
-            	        + "                </tr>"
-                        + "                <tr>"
-            	        + "                    <th>Total Charges</th>"
-            	        + "                    <td>{{totalCharges}}</td>"
-            	        + "                </tr>"
-            	        + "                <tr>"
-            	        + "                    <th>Tax</th>"
-            	        + "                    <td>{{tax}}</td>"
-            	        + "                </tr>"
-            	        + "                <tr>"
-            	        + "                    <th>Final Amount</th>"
-            	        + "                    <td>{{finalAmount}}</td>"
-            	        + "                </tr><br>"
-            	        + "                <tr>"
-            	        + "                    <th>Due Date</th>"
-            	        + "                    <td>{{dueDate}}</td>"
-            	        + "                </tr>"
-            	        + "            </table>"
-            	        + "            <!-- Payment Button -->"
-            	        + "            <p style=\"text-align: center;\">"
-            	        + "                <a href=\"{{paymentLink}}\" class=\"button\">Pay Now</a>"
-            	        + "            </p>"
-            	        + "            <p>If you have already paid this bill, please disregard this email.</p>"
-            	        + "            <p>Thank you for choosing our services.</p>"
-            	        + "        </div>"
-            	        + "        <!-- Footer -->"
-            	        + "        <div class=\"footer\">"
-            	        + "            <p>&copy; 2024 Your Company Name. All Rights Reserved.</p>"
-            	        + "            <p>Contact us: <a href=\"mailto:support@yourcompany.com\">support@yourcompany.com</a></p>"
-            	        + "        </div>"
-            	        + "    </div>"
-            	        + "</body>"
-            	        + "</html>";
              //int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due
-            
-             String emailBody = htmlContent.replace("{{billId}}", String.valueOf(bill_id))
+             
+             String billSender=mailTemplate.getBillCreating();
+             String usage_details=String.valueOf(usage.getCalls())+ "Calls , "+String.valueOf(usage.getDataUsed())+" GB of Data And " +String.valueOf(usage.getSms())+ " SMS";
+             String emailBody = billSender.replace("{{billId}}", String.valueOf(bill_id))
                      .replace("{{issueDate}}", LocalDate.now().toString())
                      .replace("{{planName}}", planname)
                      .replace("{{billCycle}}", planstart.toString()+" to "+enddate.toString())
                      .replace("{{totalCharges}}", String.valueOf(totalCharges))
                      .replace("{{tax}}", String.valueOf(tax))
                      .replace("{{finalAmount}}", String.valueOf(finalAmount))
-                     .replace("{{dueDate}}", due.toString());
+                     .replace("{{dueDate}}", due.toString())
+                     .replace("{{Usage}}",usage_details);
 
              // Set the content of the email to HTML
              message.setContent(emailBody, "text/html; charset=utf-8");
@@ -381,12 +273,10 @@ public class BillServiceImpl implements BillService {
 
              System.out.println("HTML email sent successfully!");
 
-         } catch (MessagingException e) {
-             e.printStackTrace();
-         }
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
-
-
 
 }
 
