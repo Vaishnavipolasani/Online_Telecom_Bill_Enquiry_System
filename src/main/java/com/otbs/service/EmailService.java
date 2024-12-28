@@ -3,7 +3,10 @@ package com.otbs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
@@ -23,15 +26,24 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    public void sendThankYouEmail(String toEmail, String customerName) {
-        // Create the email message
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Thank You for Registering!");
-        message.setText("Dear " + customerName + ",\n\nThank you for registering with us! We are excited to have you on board.\n\nBest Regards,\nBharat Teleservices");
-        message.setFrom("your_email@example.com"); // Replace with your email
+    //Registration Email sending by Team 1
+    public void sendThankYouEmail(String toEmail, String username) {
+        try {
+            String subject = "Welcome to Bharat Teleservices!";
+            String body = String.format(
+                "Dear %s,\n\nThank you for registering with Bharat Teleservices!\n\nBest Regards,\nTeam Bharat Teleservices",
+                username);
 
-        // Send the email
-        mailSender.send(message);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(body);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }
