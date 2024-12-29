@@ -25,7 +25,7 @@ public class Bill {
     @JoinColumn(name = "usageId", nullable = false)
     private UsageInfo usage;  // Foreign key to Usage
 
-    @Column(name = "date", columnDefinition = "DATE")
+    @Column(name = "billGeneratedDate", columnDefinition = "DATE")
     private LocalDate date;
 
     private int additionalCharges;
@@ -45,6 +45,8 @@ public class Bill {
     @Column(name = "DueDate", columnDefinition = "DATE")
     private LocalDate dueDate;
 
+    
+    
     // Getters and Setters
     public int getBillId() {
         return billId;
@@ -69,14 +71,6 @@ public class Bill {
     public void setDate(LocalDate date) {
         this.date = date;
     }
-
-//    public Usage getUsage() {
-//        return usage;
-//    }
-//
-//    public void setUsage(Usage usage) {
-//        this.usage = usage;
-//    }
 
     public int getAdditionalCharges() {
         return additionalCharges;
@@ -125,16 +119,5 @@ public class Bill {
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
-    
-    
-//    public float getLatePaymentFee() {
-//		return LatePaymentFee;
-//	}
-//
-//	public void setLatePaymentFee(float latePaymentFee) {
-//		LatePaymentFee = latePaymentFee;
-//	}
-
-//	private float LatePaymentFee;
     
 }

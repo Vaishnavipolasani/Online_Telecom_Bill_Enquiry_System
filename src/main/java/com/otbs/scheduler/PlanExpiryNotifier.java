@@ -24,8 +24,8 @@ public class PlanExpiryNotifier {
     @Autowired
     private TwilioService twilioService;
 
-//    @Scheduled(cron = "0 0 0 * * ?") // Run every day at midnight
-    @Scheduled(cron = "* * * * * ?") // Run every second
+    @Scheduled(cron = "0 0 0 * * ?") // Run every day at midnight
+//    @Scheduled(cron = "* * * * * ?") // Run every second
     public void checkPlanExpiry() {			  // @Scheduled(cron = "0 0/1 * * * ?") // Run every minute	
         LocalDate today = LocalDate.now();
         System.out.println("date of today is "+today);

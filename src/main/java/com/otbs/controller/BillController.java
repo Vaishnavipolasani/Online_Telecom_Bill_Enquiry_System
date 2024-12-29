@@ -47,14 +47,36 @@ public class BillController {
         }
         else return bills; 
     }
+    
+    @GetMapping("/customer/{billId}/bill")
+    public Bill getbill(@PathVariable int billId) throws  InvalidEntityException{
+    	return billService.getBill(billId);
+    }
 
     @GetMapping("/customer/{billId}/pay")
     public String payBill(@PathVariable int billId) throws  InvalidEntityException{
         Boolean paid = billService.payBill(billId);
         if(!paid) throw new InvalidEntityException("Bill Not Paid");
-        return "Bill paid Successflly";
+        else return "Bill paid Successflly";
     }
 
+    //Admine purpose 
+    
+    @GetMapping("/customer/unpaidbills")
+    public List<Bill> getAllUnpaidBills() throws InvalidEntityException{
+    	List<Bill> bills= billService.allunpaidbill();
+    	if(bills.isEmpty()) throw new InvalidEntityException("No Unpaid Bills Found");
+    	else return bills;
+    }
+    
+    @GetMapping("/customer/billcrossduedate")
+    public List<Bill> getAllUnpaidBillCrossDue() throws InvalidEntityException{
+    	List<Bill> bills= billService.billCrossDueDate();
+    	if(bills.isEmpty()) throw new InvalidEntityException("No Unpaid Bills Crosses The DueDate");
+    	else return bills;
+    }
+    
+    
     
 
 }

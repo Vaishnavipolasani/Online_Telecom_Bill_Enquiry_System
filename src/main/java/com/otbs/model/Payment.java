@@ -1,5 +1,7 @@
 package com.otbs.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +14,18 @@ public class Payment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int paymentId;
+	
+	@OneToOne
+	@JoinColumn(name="bill_id")
+	private Bill billId;
+	private double amount;
+	private String paymentMethod;
+	private LocalDate paymentDate;
+	private String transactionId;
+
+	
+	//Getter and setter
+	
 	public int getPaymentId() {
 		return paymentId;
 	}
@@ -24,10 +38,10 @@ public class Payment {
 	public void setBillId(Bill billId) {
 		this.billId = billId;
 	}
-	public float getAmount() {
+	public double getAmount() {
 		return amount;
 	}
-	public void setAmount(float amount) {
+	public void setAmount(double amount) {
 		this.amount = amount;
 	}
 	public String getPaymentMethod() {
@@ -36,11 +50,11 @@ public class Payment {
 	public void setPaymentMethod(String paymentMethod) {
 		this.paymentMethod = paymentMethod;
 	}
-	public String getPaymentStatus() {
-		return paymentStatus;
+	public LocalDate getpaymentDate() {
+		return paymentDate;
 	}
-	public void setPaymentStatus(String paymentStatus) {
-		this.paymentStatus = paymentStatus;
+	public void setpaymentDate(LocalDate paymentDate) {
+		this.paymentDate = paymentDate;
 	}
 	public String getTransactionId() {
 		return transactionId;
@@ -48,14 +62,4 @@ public class Payment {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	
-	@OneToOne
-	@JoinColumn(name="bill_id")
-	private Bill billId;
-	private float amount;
-	private String paymentMethod;
-	private String paymentStatus;
-	private String transactionId;
-	
-
 }
