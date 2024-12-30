@@ -184,7 +184,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    @Scheduled(cron = "30 * * * * ?") // Run daily at midnight
+    @Scheduled(cron = "0 0 0 * * ?") // Run daily at midnight
     public void generateBillsForAllConnections() {
         List<Connection> connections = connectionRepository.findAll(); //getting all the connection , i think we need to fetch the " active " connection
         System.out.println(connections.size());
