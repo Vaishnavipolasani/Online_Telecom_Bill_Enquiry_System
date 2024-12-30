@@ -30,5 +30,31 @@ public class CustomerService {
         }
         return null;
     }
+    
+    public Customer getCustomerByUsername(String username) {
+        return customerRepository.findByUsername(username);
+    }
+
+    // Update Customer Details
+    public Customer updateCustomer(String username, Customer customer) {
+        // Fetch the existing customer directly
+        Customer existingCustomer = customerRepository.findByUsername(username);
+
+        if (existingCustomer != null) {
+            // Update only the fields that are allowed to change
+            existingCustomer.setName(customer.getName());
+            existingCustomer.setEmail(customer.getEmail());
+            existingCustomer.setPhoneNumber(customer.getPhoneNumber());
+            existingCustomer.setAddress(customer.getAddress());
+            existingCustomer.setDob(customer.getDob());
+            existingCustomer.setGender(customer.getGender());
+
+            // Save and return the updated customer
+            return customerRepository.save(existingCustomer);
+        } else {
+            // Handle the case where the customer is not found
+            throw new RuntimeException("Customer not found with username: " + username);
+        }
+    }
 }
 
