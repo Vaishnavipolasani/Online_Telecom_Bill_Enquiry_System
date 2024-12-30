@@ -125,6 +125,7 @@ public class ConnectionService {
 
         connection.setProcessingFee(processingFee);
     }
+   
     
     public List<Connection> getConnectionsNearingExpiry() {
         List<Connection> connections = connectionRepository.findAll();
@@ -133,9 +134,10 @@ public class ConnectionService {
                 .filter(connection -> {
                     LocalDate expiryDate = connection.getActivationdate().plusDays(connection.getPlan().getNumberOfDay());
                     LocalDate today = LocalDate.now();
-                    return expiryDate.isAfter(today) && expiryDate.isBefore(today.plusDays(7));
+                    return expiryDate.isAfter(today) && expiryDate.isBefore(today.plusDays(5));
                 })
                 .collect(Collectors.toList());
     }
+
     
 }

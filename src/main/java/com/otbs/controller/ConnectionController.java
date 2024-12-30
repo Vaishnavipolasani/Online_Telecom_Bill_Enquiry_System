@@ -54,7 +54,7 @@ public class ConnectionController {
         return connectionService.upgradePlan(connection, connectionId);
     }
 
-    @DeleteMapping("/{connectionId}")
+    @DeleteMapping("/deletebyId/{connectionId}")
     public boolean terminateConnection(@PathVariable int connectionId) throws InvalidEntityException {
         return connectionService.terminateConnection(connectionId);
     }
@@ -64,16 +64,16 @@ public class ConnectionController {
         return connectionService.getAllConnections();
     }
 
-    @GetMapping("/{connectionId}")
+    @GetMapping("/getbyId/{connectionId}")
     public Connection getByConnectionId(@PathVariable int connectionId) throws InvalidEntityException {
         return connectionService.getByConnectionId(connectionId);
     }
     
-    @PostMapping("/calculate-fee")
-    public Connection calculateProcessingFee(@RequestBody Connection connection) {
-        connectionService.calculateProcessingFee(connection);
-        return connection;
-    }
+//    @PostMapping("/calculate-fee")
+//    public Connection calculateProcessingFee(@RequestBody Connection connection) {
+//        connectionService.calculateProcessingFee(connection);
+//        return connection;
+//    }
     
     @GetMapping("/connections-nearing-expiry")
     public List<Connection> getConnectionsNearingExpiry() {
