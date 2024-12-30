@@ -20,30 +20,31 @@ import com.otbs.service.OutletService;
 @RestController
 @RequestMapping("/outlet")
 public class OutletController {
-	
-	@Autowired
-	private OutletService outletService;
-	
-	public OutletController(OutletService outletService) {
-		this.outletService=outletService;
-	}
-	
-	@PostMapping("/add")
-	public Outlet addOutlet(@RequestBody Outlet outlet) {
-		return outletService.addOutlet(outlet);
-	}
-	
-	@GetMapping("/all")
-	public List<Outlet> getAllOutlets(){
-		return outletService.getAllOutlets();
-	}
-	
-	@GetMapping("/nearest/{location}")
-	public ResponseEntity<Outlet> findNearestOutlet(@PathVariable String location) {
-		return new ResponseEntity<>(outletService.findNearestOutlet(location), HttpStatus.OK);
-	}
-
-
-
-
+    
+    @Autowired
+    private OutletService outletService;
+    
+    public OutletController(OutletService outletService) {
+        this.outletService = outletService;
+    }
+    
+    @PostMapping("/add")
+    public Outlet addOutlet(@RequestBody Outlet outlet) {
+        return outletService.addOutlet(outlet);
+    }
+    
+    @GetMapping("/all")
+    public List<Outlet> getAllOutlets(){
+        return outletService.getAllOutlets();
+    }
+    
+    @GetMapping("/nearest/{location}")
+    public ResponseEntity<Outlet> findNearestOutlet(@PathVariable String location) {
+        Outlet nearestOutlet = outletService.findNearestOutlet(location);
+        if (nearestOutlet != null) {
+            return new ResponseEntity<>(nearestOutlet, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
