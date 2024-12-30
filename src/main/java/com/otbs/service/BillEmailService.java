@@ -7,7 +7,10 @@ import lombok.Getter;
 @Getter
 @Service
 public class BillEmailService {
+//	 @Value("${spring.mail.username}")
      private String senderEmail = "sivarajc357@gmail.com";
+	
+//	 @Value("${spring.mail.password}")
      private String senderPassword = "tihuoneubjpnvmty"; // Use App Password if 2FA is enabled
      // HTML content for the email body
      private String billCreating = "<!DOCTYPE html>"

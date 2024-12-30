@@ -48,11 +48,11 @@
         </dependency>
         
         <!--mail sending -->
-        <dependency>
+       <!--<dependency>
 		    <groupId>com.sun.mail</groupId>
 		    <artifactId>javax.mail</artifactId>
 		    <version>1.6.2</version>
-		</dependency>
+		</dependency> --> 
 
         <!-- Spring Boot Starter Test (for Unit and Integration Testing) -->
         <dependency>

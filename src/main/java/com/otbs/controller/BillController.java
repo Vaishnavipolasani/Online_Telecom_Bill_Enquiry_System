@@ -53,9 +53,9 @@ public class BillController {
     	return billService.getBill(billId);
     }
 
-    @GetMapping("/customer/{billId}/pay")
-    public String payBill(@PathVariable int billId) throws  InvalidEntityException{
-        Boolean paid = billService.payBill(billId);
+    @GetMapping("/pay/{billId}/{paymentMethod}")
+    public String payBill(@PathVariable int billId,@PathVariable String paymentMethod) throws  InvalidEntityException{
+        Boolean paid = billService.payBill(billId,paymentMethod);
         if(!paid) throw new InvalidEntityException("Bill Not Paid");
         else return "Bill paid Successflly";
     }

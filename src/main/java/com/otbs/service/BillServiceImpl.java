@@ -1,18 +1,37 @@
 package com.otbs.service;
 
 import java.time.LocalDate;
+
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+//import javax.mail.Authenticator;
+//import javax.mail.Message;
+//import javax.mail.MessagingException;
+//import javax.mail.PasswordAuthentication;
+//import javax.mail.Session;
+//import javax.mail.Transport;
+//import javax.mail.internet.InternetAddress;
+//import javax.mail.internet.MimeMessage;
+
+import jakarta.mail.Authenticator;
+
+import jakarta.mail.Message;
+
+import jakarta.mail.PasswordAuthentication;
+
+import jakarta.mail.Session;
+
+import jakarta.mail.Transport;
+
+import jakarta.transaction.Transactional;
+
+import jakarta.mail.MessagingException;
+
+import jakarta.mail.internet.InternetAddress;
+
+import jakarta.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -207,7 +226,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Transactional
-    public Boolean payBill(int billId){
+    public Boolean payBill(int billId,String paymentMethod){
         Bill bill = billRepository.findByBillId(billId);
         if(bill == null) return false;
         
@@ -218,6 +237,7 @@ public class BillServiceImpl implements BillService {
         payDetail.setBillId(bill);
         payDetail.setAmount(bill.getTotalAmount());
         payDetail.setpaymentDate(LocalDate.now());
+        payDetail.setPaymentMethod(paymentMethod);
         paymentRepository.save(payDetail);
         
         String custemail=bill.getConnection().getCustomerObj().getEmail();
