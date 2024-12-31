@@ -2,7 +2,11 @@ package com.otbs.controller;
 
 import java.util.List;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,11 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.otbs.exception.InvalidEntityException;
 import com.otbs.model.Bill;
 import com.otbs.service.BillServiceImpl;
+import com.otbs.service.PdfService;
+import com.otbs.repository.*;
 
 @RestController
 @RequestMapping("/api/bills")
 public class BillController {
+	
+	@Autowired
+	private PdfService pdfService;
 
+	@Autowired
+	private BillRepository billrepositort;
+	
     @Autowired
     BillServiceImpl billService=new BillServiceImpl();
 
@@ -59,6 +71,22 @@ public class BillController {
         if(!paid) throw new InvalidEntityException("Bill Not Paid");
         else return "Bill paid Successflly";
     }
+    
+    //Genetation Pdf 
+    @CrossOrigin(origins = "http://localhost:8091")
+    @GetMapping("/download/{billId}")
+    public ResponseEntity<byte[]> downloadBillPdf(@PathVariable int billId) {
+        Bill bill = billrepositort.findById(billId)
+                .orElseThrow(() -> new RuntimeException("Bill not found with ID: " + billId));
+
+        byte[] pdfData = pdfService.generateBillPdf(bill);
+
+        System.out.println("i am receiving the download request");
+        
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bill_" + billId + ".pdf")
+                .body(pdfData);
+    }
 
     //Admine purpose 
     
@@ -75,9 +103,6 @@ public class BillController {
     	if(bills.isEmpty()) throw new InvalidEntityException("No Unpaid Bills Crosses The DueDate");
     	else return bills;
     }
-    
-    
-    
 
 }
 

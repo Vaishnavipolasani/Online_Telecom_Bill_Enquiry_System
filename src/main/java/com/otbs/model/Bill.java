@@ -32,6 +32,8 @@ public class Bill {
     private int discount;
     private double tax;
     private double totalAmount;
+    
+    
     public UsageInfo getUsage() {
 		return usage;
 	}
