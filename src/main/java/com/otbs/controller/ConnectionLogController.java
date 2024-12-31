@@ -22,7 +22,7 @@ public class ConnectionLogController {
     }
 
     // Get logs for a specific connection
-    @GetMapping("/{connectionId}")
+    @GetMapping("/getlogbyId/{connectionId}")
     public List<ConnectionLog> getLogsByConnectionId(@PathVariable int connectionId) {
         return connectionLogService.getLogsByConnectionId(connectionId);
     }
