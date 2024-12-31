@@ -34,7 +34,14 @@ public class CustomerService {
     public Customer getCustomerByUsername(String username) {
         return customerRepository.findByUsername(username);
     }
-
+    
+    //sivaraj
+    public int getcustomerId(String Username) {
+    	return customerRepository.findcustomerid(Username);
+    }
+    
+    
+    
     // Update Customer Details
     public Customer updateCustomer(String username, Customer customer) {
         // Fetch the existing customer directly

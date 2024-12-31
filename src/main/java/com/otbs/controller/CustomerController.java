@@ -46,6 +46,12 @@ public class CustomerController {
     public Customer getCustomerByUsername(@PathVariable String username) {
         return customerService.getCustomerByUsername(username);
     }
+    
+    // by sivaraj 
+    @GetMapping("/customerId/{username}")
+    public int getcustomerId(@PathVariable String username) {
+    	return customerService.getcustomerId(username);
+    }
 
     // Update Customer Details (PUT Request)
     @PutMapping("/{username}")

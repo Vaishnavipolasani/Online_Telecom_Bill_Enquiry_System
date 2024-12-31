@@ -26,7 +26,7 @@ public class Customer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int customerId;
-	private int id;
+//	private int id;
 	private String name;
 	private String email;
 	private String phoneNumber;
@@ -42,12 +42,12 @@ public class Customer {
 	
 	
 	
-	public int getCustomerId() {
-		return id;
-	}
-	public void setCustomerId(int customerId) {
-		this.id = customerId;
-	}
+//	public int getCustomerId() {
+//		return id;
+//	}
+//	public void setCustomerId(int customerId) {
+//		this.id = customerId;
+//	}
 	public String getName() {
 		return name;
 	}
