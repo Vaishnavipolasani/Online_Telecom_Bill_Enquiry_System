@@ -25,7 +25,7 @@ public interface PlanService {
     
     List<Plan> getPlansByDataLimit(String dataLimit) throws InvalidEntityException;
     
-    Optional<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException;
+    List<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException;
     
     List<Plan> getPlansByStatus(PlanStatus status) throws InvalidEntityException;
     

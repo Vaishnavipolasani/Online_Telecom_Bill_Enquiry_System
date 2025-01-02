@@ -22,17 +22,10 @@ public class GlobalExceptionHandler {
         error.put("message", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
-
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
-//        Map<String, String> error = new HashMap<>();
-//        error.put("message", "An unexpected error occurred: " + ex.getMessage());
-//        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
     
     
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) { //MethodArgumentNotValidException
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleGenericException(MethodArgumentNotValidException ex) { //MethodArgumentNotValidException
         Map<String, String> errors = new HashMap<>();
         BindingResult result = ((BindException) ex).getBindingResult();      // we are typecast becasue we aare taking Exception as argument 
         List<FieldError> fieldErrors = result.getFieldErrors();
@@ -42,5 +35,37 @@ public class GlobalExceptionHandler {
 //        error.put("message", "An unexpected error occurred: " + ex.getMessage());
         return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+	
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+//    old code...
+	
+//	@ExceptionHandler(InvalidEntityException.class)
+//	public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+//	    Map<String, String> errors = new HashMap<>();
+//	    ex.getBindingResult().getFieldErrors().forEach(error -> 
+//	        errors.put(error.getField(), error.getDefaultMessage())
+//	    );
+//	    return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
+//	}
+//
+//	@ExceptionHandler(Exception.class)
+//	public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
+//	    Map<String, String> error = new HashMap<>();
+//	    error.put("message", "An unexpected error occurred.");
+//	    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
+
+	
     
 }

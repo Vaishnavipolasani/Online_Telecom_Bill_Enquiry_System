@@ -93,35 +93,18 @@ public class PlanServiceImpl implements PlanService {
         return plans;
     }
     
+   
     
-//    @Override
-//    public Optional<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException {
-//        logger.info("Fetching plan by number of days: {}", numberOfDay);
-//        try {
-//            Optional<Plan> plan = planRepository.findByNumberOfDay(numberOfDay);
-//            if (plan.isEmpty()) {
-//                throw new InvalidEntityException("Plan with " + numberOfDay + " days does not exist.");
-//            }
-//            logger.debug("Fetched Plan: {}", plan.get());
-//            return plan;
-//        } catch (Exception e) {
-//            logger.error("Error fetching plan by number of days", e);
-//            throw e;
-//        }
-//    }
-
-    
-    
-
     @Override
-    public Optional<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException {
-        logger.info("Fetching plan by number of days: {}", numberOfDay);
-        Optional<Plan> plan = planRepository.findByNumberOfDay(numberOfDay);
-        if (plan.isEmpty()) {
-            throw new InvalidEntityException("Plan with " + numberOfDay + " days does not exist.");
+    public List<Plan> getPlansByNumberOfDay(int numberOfDay) throws InvalidEntityException {
+        logger.info("Fetching plans by number of days: {}", numberOfDay);
+        List<Plan> plans = planRepository.findByNumberOfDay(numberOfDay);
+        if (plans.isEmpty()) {
+            throw new InvalidEntityException("No plans found with " + numberOfDay + " days.");
         }
-        return plan;
+        return plans;
     }
+
     
     
     @Override
@@ -153,10 +136,14 @@ public class PlanServiceImpl implements PlanService {
         logger.info("Updating plan with ID: {}", id);
         
         // Check if another plan with the same name exists
-        if (planRepository.existsByPlanName(updatedPlan.getPlanName()) && 
-            !planRepository.findById(id).map(Plan::getPlanName).equals(updatedPlan.getPlanName())) {
+        if (planRepository.existsByPlanName(updatedPlan.getPlanName())) {
             throw new InvalidEntityException("Plan with name " + updatedPlan.getPlanName() + " already exists.");
         }
+        
+//        if (planRepository.existsByPlanName(updatedPlan.getPlanName()) && 
+//                planRepository.findById(id).map(Plan::getPlanName).equals(updatedPlan.getPlanName())) {
+//                throw new InvalidEntityException("Plan with name " + updatedPlan.getPlanName() + " already exists.");
+//            }
         
         return planRepository.findById(id).map(existingPlan -> {
             existingPlan.setPlanName(updatedPlan.getPlanName());
@@ -166,6 +153,10 @@ public class PlanServiceImpl implements PlanService {
             existingPlan.setSmsLimit(updatedPlan.getSmsLimit());
             existingPlan.setPlanGroup(updatedPlan.getPlanGroup());
             existingPlan.setNumberOfDay(updatedPlan.getNumberOfDay());
+            existingPlan.setStatus(updatedPlan.getStatus());
+            existingPlan.setExtraChargePerMB(updatedPlan.getExtraChargePerMB());
+            existingPlan.setExtraChargePerCall(updatedPlan.getExtraChargePerCall());
+            existingPlan.setExtraChargePerSMS(updatedPlan.getExtraChargePerSMS());
             return planRepository.save(existingPlan);
         }).orElseThrow(() -> new InvalidEntityException("Plan with ID " + id + " not found."));
     }

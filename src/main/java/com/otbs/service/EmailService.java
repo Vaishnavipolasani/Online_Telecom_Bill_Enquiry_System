@@ -1,7 +1,6 @@
 package com.otbs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -16,15 +15,25 @@ public class EmailService {
     
     
     public void sendEmail(String toEmail, String subject, String messageText) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        System.out.println("sender email id : "+toEmail);
-        System.out.println("subject sender email id : "+subject);
-        System.out.println("message sender email id : "+messageText); 
-        message.setTo(toEmail);
-        message.setSubject(subject);
-        message.setText(messageText);
-        mailSender.send(message);
-    }
+//        SimpleMailMessage message = new SimpleMailMessage(); 
+//        message.setTo(toEmail);
+//        message.setSubject(subject);
+//        message.setText(messageText);
+//        mailSender.send(message);
+        try {
+        
+        	MimeMessage message = mailSender.createMimeMessage();
+        	MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        	helper.setTo(toEmail);
+        	helper.setSubject(subject);
+        	helper.setText(messageText);
+        	mailSender.send(message);
+        	}
+        	catch (MessagingException e) {
+        		e.printStackTrace();
+        	}
+    	}
 
     //Registration Email sending by Team 1
     public void sendThankYouEmail(String toEmail, String username) {

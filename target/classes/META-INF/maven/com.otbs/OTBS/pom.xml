@@ -48,11 +48,13 @@
         </dependency>
         
         <!--mail sending -->
+        <!--
         <dependency>
 		    <groupId>com.sun.mail</groupId>
 		    <artifactId>javax.mail</artifactId>
 		    <version>1.6.2</version>
 		</dependency>
+		-->
 
         <!-- Spring Boot Starter Test (for Unit and Integration Testing) -->
         <dependency>
@@ -69,6 +71,7 @@
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+
 		<!-- Jakarta Validation API -->
 <dependency>
     <groupId>jakarta.validation</groupId>
