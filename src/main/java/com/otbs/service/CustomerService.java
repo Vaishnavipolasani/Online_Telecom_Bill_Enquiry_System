@@ -14,9 +14,13 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     public Customer registerCustomer(Customer customer) {
-        Customer registeredCustomer = customerRepository.save(customer);
-        System.out.println("Customer registered and email sent to: " + registeredCustomer.getEmail());
-        return registeredCustomer;
+        if (customerRepository.existsByUsername(customer.getUsername())) {
+            throw new RuntimeException("Username already exists.");
+        }
+        if (customerRepository.existsByEmail(customer.getEmail())) {
+            throw new RuntimeException("Email already exists.");
+        }
+        return customerRepository.save(customer);
     }
 
     public List<Customer> getAllCustomers() {

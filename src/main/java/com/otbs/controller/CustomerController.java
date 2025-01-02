@@ -19,15 +19,16 @@ public class CustomerController {
 
     @Autowired
     private EmailService emailService;
+    
     @PostMapping("/register")
-    public Customer registerCustomer(@RequestBody Customer customer) {
-        // Register the customer
-        Customer registeredCustomer = customerService.registerCustomer(customer);
-
-        // Send a confirmation email
-        emailService.sendThankYouEmail(registeredCustomer.getEmail(), registeredCustomer.getName());
-
-        return registeredCustomer;
+    public ResponseEntity<?> registerCustomer(@RequestBody Customer customer) {
+        try {
+            Customer registeredCustomer = customerService.registerCustomer(customer);
+            emailService.sendThankYouEmail(registeredCustomer.getEmail(), registeredCustomer.getName()); //REgisteration email sent
+            return ResponseEntity.ok("Registration successful.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
