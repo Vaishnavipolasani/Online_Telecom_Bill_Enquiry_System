@@ -47,7 +47,17 @@
 			<optional>true</optional>
         </dependency>
         
+		<!-- https://mvnrepository.com/artifact/com.itextpdf/itext7-core -->
+		<dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>itext7-core</artifactId>
+		    <version>9.0.0</version>
+		    <type>pom</type>
+		</dependency>
+
+        
         <!--mail sending -->
+<<<<<<< HEAD
         <!--
         <dependency>
 		    <groupId>com.sun.mail</groupId>
@@ -55,6 +65,13 @@
 		    <version>1.6.2</version>
 		</dependency>
 		-->
+=======
+       <!--<dependency>
+		    <groupId>com.sun.mail</groupId>
+		    <artifactId>javax.mail</artifactId>
+		    <version>1.6.2</version>
+		</dependency> --> 
+>>>>>>> 6429fbc3f3c9a291df88bfe6f5848d894ceed922
 
         <!-- Spring Boot Starter Test (for Unit and Integration Testing) -->
         <dependency>

@@ -1,6 +1,9 @@
 package com.otbs.service;
 
 import java.time.LocalDate;
+
+
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,6 +15,27 @@ import java.util.Properties;
 //import javax.mail.Transport;
 //import javax.mail.internet.InternetAddress;
 //import javax.mail.internet.MimeMessage;
+<<<<<<< HEAD
+=======
+
+import jakarta.mail.Authenticator;
+
+import jakarta.mail.Message;
+
+import jakarta.mail.PasswordAuthentication;
+
+import jakarta.mail.Session;
+
+import jakarta.mail.Transport;
+
+import jakarta.transaction.Transactional;
+
+import jakarta.mail.MessagingException;
+
+import jakarta.mail.internet.InternetAddress;
+
+import jakarta.mail.internet.MimeMessage;
+>>>>>>> 6429fbc3f3c9a291df88bfe6f5848d894ceed922
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,10 +43,12 @@ import org.springframework.stereotype.Service;
 
 import com.otbs.model.Bill;
 import com.otbs.model.Connection;
+import com.otbs.model.Payment;
 import com.otbs.model.Plan;
 import com.otbs.model.UsageInfo;
 import com.otbs.repository.BillRepository;
 import com.otbs.repository.ConnectionRepository;
+import com.otbs.repository.PaymentRepository;
 import com.otbs.repository.PlanRepository;
 import com.otbs.repository.UsageInfoRepository;
 
@@ -51,6 +77,9 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private PlanRepository planRepository;
+    
+    @Autowired
+    private PaymentRepository paymentRepository;
 
 
     @Override
@@ -159,9 +188,15 @@ public class BillServiceImpl implements BillService {
         
         
     }
+    
+    //due alert email 
+    public void dueAlert(Bill bill) {
+    	String custEmail=bill.getConnection().getCustomerObj().getEmail();
+    	dueBending(bill,custEmail);
+    }
 
     @Override
-    @Scheduled(cron = "30 * * * * ?") // Run daily at midnight
+    @Scheduled(cron = "0 0 0 * * ?") // Run daily at midnight
     public void generateBillsForAllConnections() {
         List<Connection> connections = connectionRepository.findAll(); //getting all the connection , i think we need to fetch the " active " connection
         System.out.println(connections.size());
@@ -174,6 +209,15 @@ public class BillServiceImpl implements BillService {
                 generatePostpaidBill(connection.getConnectionId());  //edited by me to check date 
                 System.out.println("postpaid");
             }
+        }
+        List<Bill> unpaidbills = billRepository.findAllBillsByStatus("unpaid");
+        for(Bill bills : unpaidbills) {
+        	LocalDate duedate= bills.getDueDate();
+        	LocalDate currentDate = LocalDate.now();
+        	int dueDateDifference =(int) Math.abs(ChronoUnit.DAYS.between(duedate, currentDate)) ;
+        	if(dueDateDifference == 3) {
+        		dueAlert(bills);
+        	}
         }
         System.out.println("sivaraj- hear");
     }
@@ -193,11 +237,23 @@ public class BillServiceImpl implements BillService {
         return billRepository.findBillsByCustomerIdAndDateAfter(customerId, sixMonthsAgo);
     }
 
-    public Boolean payBill(int billId){
+    @Transactional
+    public Boolean payBill(int billId,String paymentMethod){
         Bill bill = billRepository.findByBillId(billId);
         if(bill == null) return false;
+        
         bill.setStatus("Paid");
-
+        billRepository.save(bill);
+        
+        Payment payDetail = new Payment();
+        payDetail.setBillId(bill);
+        payDetail.setAmount(bill.getTotalAmount());
+        payDetail.setpaymentDate(LocalDate.now());
+        payDetail.setPaymentMethod(paymentMethod);
+        paymentRepository.save(payDetail);
+        
+        String custemail=bill.getConnection().getCustomerObj().getEmail();
+        paymentMail(bill,custemail);
         return true;
     }
 
@@ -224,7 +280,19 @@ public class BillServiceImpl implements BillService {
     	return date.plusDays(day);
     }
     
+    public Bill getBill(int billId){
+    	return billRepository.findByBillId(billId);
+    }
     
+    public List<Bill> allunpaidbill(){
+    	return billRepository.findAllBillsByStatus("unpaid");
+    }
+    
+    public List<Bill> billCrossDueDate(){
+    	return billRepository.findAllBillsCrossDueDate("unpaid", LocalDate.now());
+    }
+    
+    //Emails
     
     public static void  mailsendingPost(int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due,String email,UsageInfo usage) {
         BillEmailService mailTemplate = new BillEmailService();
@@ -256,7 +324,7 @@ public class BillServiceImpl implements BillService {
                  Message.RecipientType.TO,
                  InternetAddress.parse(recipientEmail)
              );
-             message.setSubject("Beautiful HTML Email from Java"); // Email subject
+             message.setSubject("New Bill "); // Email subject
 
 
              //int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due
@@ -279,12 +347,126 @@ public class BillServiceImpl implements BillService {
              // Send the email
              Transport.send(message);
 
-             System.out.println("HTML email sent successfully!");
+             System.out.println("HTML billgenerated email sent successfully!");
 
         } catch (MessagingException e) {
             e.printStackTrace();
         }
     }
 
+    
+    public static void paymentMail(Bill bill , String email) {
+    	
+    	 BillEmailService mailTemplate = new BillEmailService();
+         final String senderEmail=mailTemplate.getSenderEmail();
+         final String senderPassword=mailTemplate.getSenderPassword();
+
+          // Receiver's email
+          String recipientEmail = email;
+
+          // SMTP server properties
+          Properties properties = new Properties();
+          properties.put("mail.smtp.host", "smtp.gmail.com"); // SMTP host
+          properties.put("mail.smtp.port", "587"); // TLS port
+          properties.put("mail.smtp.auth", "true"); // Enable authentication
+          properties.put("mail.smtp.starttls.enable", "true"); // Enable TLS
+
+          // Create a session with authentication
+          Session session = Session.getInstance(properties, new Authenticator() {
+              protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(senderEmail, senderPassword);
+              }
+          });
+          
+          try {
+              // Create a MIME email message
+              MimeMessage message = new MimeMessage(session);
+              message.setFrom(new InternetAddress(senderEmail)); // Sender's email
+              message.setRecipients(
+                  Message.RecipientType.TO,
+                  InternetAddress.parse(recipientEmail)
+              );
+              message.setSubject("Payment Successful"); // Email subject
+
+
+              //int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due
+              
+              String billSender=mailTemplate.getPaymentSuccess();
+              
+              String emailBody = billSender.replace("{{customerName}}",bill.getConnection().getCustomerObj().getName())
+            		  .replace("{{billId}}",String.valueOf(bill.getBillId()))
+            		  .replace("{{amountPaid}}",String.valueOf(bill.getTotalAmount()))
+            		  .replace("{{paymentDate}}", LocalDate.now().toString());
+
+              // Set the content of the email to HTML
+              message.setContent(emailBody, "text/html; charset=utf-8");
+
+              // Send the email
+              Transport.send(message);
+
+              System.out.println("HTML payment email sent successfully!");
+
+         } catch (MessagingException e) {
+             e.printStackTrace();
+         }
+     }
+    
+    public static void dueBending(Bill bill , String email) {
+    	
+   	 BillEmailService mailTemplate = new BillEmailService();
+        final String senderEmail=mailTemplate.getSenderEmail();
+        final String senderPassword=mailTemplate.getSenderPassword();
+
+         // Receiver's email
+         String recipientEmail = email;
+
+         // SMTP server properties
+         Properties properties = new Properties();
+         properties.put("mail.smtp.host", "smtp.gmail.com"); // SMTP host
+         properties.put("mail.smtp.port", "587"); // TLS port
+         properties.put("mail.smtp.auth", "true"); // Enable authentication
+         properties.put("mail.smtp.starttls.enable", "true"); // Enable TLS
+
+         // Create a session with authentication
+         Session session = Session.getInstance(properties, new Authenticator() {
+             protected PasswordAuthentication getPasswordAuthentication() {
+                 return new PasswordAuthentication(senderEmail, senderPassword);
+             }
+         });
+         
+         try {
+             // Create a MIME email message
+             MimeMessage message = new MimeMessage(session);
+             message.setFrom(new InternetAddress(senderEmail)); // Sender's email
+             message.setRecipients(
+                 Message.RecipientType.TO,
+                 InternetAddress.parse(recipientEmail)
+             );
+             message.setSubject("Pending Bills Remainder"); // Email subject
+
+
+             //int bill_id,String planname,LocalDate planstart,LocalDate enddate,float totalCharges,float tax,int finalAmount,LocalDate due
+             
+             String billSender=mailTemplate.getDueBending();
+             
+             String emailBody = billSender.replace("{{customerName}}",bill.getConnection().getCustomerObj().getName())
+           		  .replace("{{billId}}",String.valueOf(bill.getBillId()))
+           		  .replace("{{amount}}",String.valueOf(bill.getTotalAmount()))
+           		  .replace("{{dueDate}}", bill.getDueDate().toString());
+
+             // Set the content of the email to HTML
+             message.setContent(emailBody, "text/html; charset=utf-8");
+
+             // Send the email
+             Transport.send(message);
+
+             System.out.println("HTML duebending email sent successfully!");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
 }
 

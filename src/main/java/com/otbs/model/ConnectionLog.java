@@ -38,6 +38,8 @@ public class ConnectionLog {
 	@Column(nullable = false)
 	private String networkType;
 	
+	private String status;
+	
 	@Column(nullable = false)
 	private LocalDate changedate;
 
@@ -72,6 +74,15 @@ public class ConnectionLog {
 	public void setNetworkType(String networkType) {
 		this.networkType = networkType;
 	}
+	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 
 	public LocalDate getChangedate() {
 		return changedate;
@@ -80,9 +91,6 @@ public class ConnectionLog {
 	public void setChangedate(LocalDate changedate) {
 		this.changedate = changedate;
 	}
-
-	
-	
 	
 	
 

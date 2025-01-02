@@ -14,9 +14,13 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     public Customer registerCustomer(Customer customer) {
-        Customer registeredCustomer = customerRepository.save(customer);
-        System.out.println("Customer registered and email sent to: " + registeredCustomer.getEmail());
-        return registeredCustomer;
+        if (customerRepository.existsByUsername(customer.getUsername())) {
+            throw new RuntimeException("Username already exists.");
+        }
+        if (customerRepository.existsByEmail(customer.getEmail())) {
+            throw new RuntimeException("Email already exists.");
+        }
+        return customerRepository.save(customer);
     }
 
     public List<Customer> getAllCustomers() {
@@ -29,6 +33,39 @@ public class CustomerService {
             return customer;
         }
         return null;
+    }
+    
+    public Customer getCustomerByUsername(String username) {
+        return customerRepository.findByUsername(username);
+    }
+    
+    //sivaraj
+    public int getcustomerId(String Username) {
+    	return customerRepository.findcustomerid(Username);
+    }
+    
+    
+    
+    // Update Customer Details
+    public Customer updateCustomer(String username, Customer customer) {
+        // Fetch the existing customer directly
+        Customer existingCustomer = customerRepository.findByUsername(username);
+
+        if (existingCustomer != null) {
+            // Update only the fields that are allowed to change
+            existingCustomer.setName(customer.getName());
+            existingCustomer.setEmail(customer.getEmail());
+            existingCustomer.setPhoneNumber(customer.getPhoneNumber());
+            existingCustomer.setAddress(customer.getAddress());
+            existingCustomer.setDob(customer.getDob());
+            existingCustomer.setGender(customer.getGender());
+
+            // Save and return the updated customer
+            return customerRepository.save(existingCustomer);
+        } else {
+            // Handle the case where the customer is not found
+            throw new RuntimeException("Customer not found with username: " + username);
+        }
     }
 }
 

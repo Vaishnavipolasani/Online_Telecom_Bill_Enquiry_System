@@ -51,7 +51,7 @@ public class Connection {
     private double processingFee;
 
     @NotNull(message = "Activation date cannot be null")
-    @JsonProperty("activationDate") // Ensure it maps correctly in JSON
+    @JsonProperty("activationdate") // Ensure it maps correctly in JSON
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate activationdate;
 

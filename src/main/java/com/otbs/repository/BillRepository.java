@@ -27,5 +27,12 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     List<Bill> findBillsByCustomerIdAndDateAfter(@Param("customerId") int customerId, @Param("startDate") LocalDate startDate);
 
     Bill findByBillId(int billId);
+    
+    @Query("SELECT b FROM Bill b WHERE b.status = :status")
+    List<Bill> findAllBillsByStatus(@Param("status") String status);
+    
+    @Query("SELECT b FROM Bill b WHERE b.status = :status And b.dueDate < :startDate ")
+    List<Bill> findAllBillsCrossDueDate(@Param("status") String status, @Param("startDate") LocalDate startDate);
+
 
 }
