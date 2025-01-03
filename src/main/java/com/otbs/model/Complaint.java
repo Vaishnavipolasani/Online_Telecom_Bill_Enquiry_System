@@ -2,10 +2,7 @@ package com.otbs.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
-
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 
 @Entity
 public class Complaint {
@@ -19,7 +16,7 @@ public class Complaint {
     private Connection connection;
 
     @ManyToOne
-    @JoinColumn(name = "executiveId") 
+    @JoinColumn(name = "executiveId")
     @JsonIgnoreProperties("complaintsAssigned")
     private HelpDeskExecutive assignedTo;
 
@@ -30,7 +27,11 @@ public class Complaint {
     private Date createdDate;
     private Date resolvedDate;
 
-  	public int getComplaintId() {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "feedbackId")
+    private Feedback feedback;
+
+	public int getComplaintId() {
 		return complaintId;
 	}
 
@@ -47,58 +48,68 @@ public class Complaint {
 	}
 
 	public HelpDeskExecutive getAssignedTo() {
-        return assignedTo;
-    }
+		return assignedTo;
+	}
 
-    public void setAssignedTo(HelpDeskExecutive assignedTo) {
-        this.assignedTo = assignedTo;
-    }
+	public void setAssignedTo(HelpDeskExecutive assignedTo) {
+		this.assignedTo = assignedTo;
+	}
 
-    public String getComplaintType() {
-        return complaintType;
-    }
+	public String getComplaintType() {
+		return complaintType;
+	}
 
-    public void setComplaintType(String complaintType) {
-        this.complaintType = complaintType;
-    }
+	public void setComplaintType(String complaintType) {
+		this.complaintType = complaintType;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getStatus() {
-        return status;
-    }
+	public String getStatus() {
+		return status;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
-    public String getPriority() {
-        return priority;
-    }
+	public String getPriority() {
+		return priority;
+	}
 
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
+	public Date getCreatedDate() {
+		return createdDate;
+	}
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
 
-    public Date getResolvedDate() {
-        return resolvedDate;
-    }
+	public Date getResolvedDate() {
+		return resolvedDate;
+	}
 
-    public void setResolvedDate(Date resolvedDate) {
-        this.resolvedDate = resolvedDate;
-    }
+	public void setResolvedDate(Date resolvedDate) {
+		this.resolvedDate = resolvedDate;
+	}
+
+	public Feedback getFeedback() {
+		return feedback;
+	}
+
+	public void setFeedback(Feedback feedback) {
+		this.feedback = feedback;
+	}
+
+    // Getters and Setters for all fields
 }
