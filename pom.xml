@@ -55,24 +55,6 @@
 		    <type>pom</type>
 		</dependency>
 
-        
-        <!--mail sending -->
-<<<<<<< HEAD
-        <!--
-        <dependency>
-		    <groupId>com.sun.mail</groupId>
-		    <artifactId>javax.mail</artifactId>
-		    <version>1.6.2</version>
-		</dependency>
-		-->
-=======
-       <!--<dependency>
-		    <groupId>com.sun.mail</groupId>
-		    <artifactId>javax.mail</artifactId>
-		    <version>1.6.2</version>
-		</dependency> --> 
->>>>>>> 6429fbc3f3c9a291df88bfe6f5848d894ceed922
-
         <!-- Spring Boot Starter Test (for Unit and Integration Testing) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

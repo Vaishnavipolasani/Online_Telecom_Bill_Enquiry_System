@@ -7,17 +7,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Properties;
 
-//import javax.mail.Authenticator;
-//import javax.mail.Message;
-//import javax.mail.MessagingException;
-//import javax.mail.PasswordAuthentication;
-//import javax.mail.Session;
-//import javax.mail.Transport;
-//import javax.mail.internet.InternetAddress;
-//import javax.mail.internet.MimeMessage;
-<<<<<<< HEAD
-=======
-
 import jakarta.mail.Authenticator;
 
 import jakarta.mail.Message;
@@ -35,7 +24,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 
 import jakarta.mail.internet.MimeMessage;
->>>>>>> 6429fbc3f3c9a291df88bfe6f5848d894ceed922
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
