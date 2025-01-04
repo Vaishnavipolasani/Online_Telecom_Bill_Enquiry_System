@@ -136,14 +136,14 @@ public class PlanServiceImpl implements PlanService {
         logger.info("Updating plan with ID: {}", id);
         
         // Check if another plan with the same name exists
-        if (planRepository.existsByPlanName(updatedPlan.getPlanName())) {
-            throw new InvalidEntityException("Plan with name " + updatedPlan.getPlanName() + " already exists.");
-        }
+//        if (planRepository.existsByPlanName(updatedPlan.getPlanName())) {
+//            throw new InvalidEntityException("Plan with name " + updatedPlan.getPlanName() + " already exists.");
+//        }
         
-//        if (planRepository.existsByPlanName(updatedPlan.getPlanName()) && 
-//                planRepository.findById(id).map(Plan::getPlanName).equals(updatedPlan.getPlanName())) {
-//                throw new InvalidEntityException("Plan with name " + updatedPlan.getPlanName() + " already exists.");
-//            }
+        if (planRepository.existsByPlanName(updatedPlan.getPlanName()) && 
+                planRepository.findById(id).map(Plan::getPlanName).equals(updatedPlan.getPlanName())) {
+                throw new InvalidEntityException("Plan with name " + updatedPlan.getPlanName() + " already exists.");
+            }
         
         return planRepository.findById(id).map(existingPlan -> {
             existingPlan.setPlanName(updatedPlan.getPlanName());
