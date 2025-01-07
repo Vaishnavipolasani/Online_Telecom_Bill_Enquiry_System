@@ -79,6 +79,23 @@ public class ConnectionController {
     public List<Connection> getConnectionsNearingExpiry() {
         return connectionService.getConnectionsNearingExpiry();
     }
+    
+//    view all connection related to a perticular customer
+    @GetMapping("/customer/{customerId}/connections")
+    public ResponseEntity<?> getConnectionsByCustomerId(@PathVariable int customerId) {
+        try {
+            List<Connection> customerConnections = connectionService.getConnectionsByCustomerId(customerId);
+
+            if (customerConnections.isEmpty()) {
+                return ResponseEntity.ok("No active connections found for the customer.");
+            }
+
+            return ResponseEntity.ok(customerConnections);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error fetching connections: " + e.getMessage());
+        }
+    }
+    
 }
 
 

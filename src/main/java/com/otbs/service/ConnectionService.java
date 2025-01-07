@@ -140,4 +140,10 @@ public class ConnectionService {
     }
 
     
+//  view all connection related to a perticular customer
+    public List<Connection> getConnectionsByCustomerId(int customerId) {
+        return connectionRepository.findByCustomerObjCustomerId(customerId);
+    }
+    
+    
 }
