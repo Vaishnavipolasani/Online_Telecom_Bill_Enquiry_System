@@ -55,7 +55,7 @@ public class BillController {
     public List<Bill> getSixMonthBillsByCustomerId(@PathVariable int customerId) throws InvalidEntityException {
         List<Bill> bills = billService.getBillsForLastSixMonth(customerId);
         if (bills.isEmpty()) {
-            throw new InvalidEntityException("customer has No Bending bill");
+            throw new InvalidEntityException("customer has No Pending bill");
         }
         else return bills; 
     }
